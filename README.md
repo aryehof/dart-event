@@ -177,6 +177,8 @@ class ValueEventArgs extends EventArgs {
 
 ## See also
 
+// TODO: EventSubscriber requires update
+
 [EventSubscriber][eventsubscriber] - subscribe to Events in `Flutter` that update the enclosed Widget.
 
 ## Features and bugs
