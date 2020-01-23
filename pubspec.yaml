@@ -1,7 +1,8 @@
-name: events
-description: A starting point for Dart libraries or applications.
-# version: 1.0.0
-# homepage: https://www.example.com
+name: event
+description: Provides for the creation of custom Events, that allow interested subscribers to be notified that something has happened.
+  Provides a notification mechanism across independent packages/layers/modules.
+version: 1.0.0
+homepage: https://github.com/aryehof/event
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
