@@ -2,7 +2,7 @@
 
 [![Pub Package](https://img.shields.io/pub/v/event.svg?style=flat-square)](https://pub.dev/packages/event)
 
-Supports the creation of lightweight custom Events, that allow interested subscribers to be notified that something has happened. Provides a notification mechanism across independent packages/layers/modules.
+Supports the creation of lightweight custom Dart Events, that allow interested subscribers to be notified that something has happened. Provides a notification mechanism across independent packages/layers/modules.
 
 This package is inspired by the `C#` language's implementation of `Events` and `Delegates`.
 
@@ -36,9 +36,39 @@ Note that the three consumers of the model, as well as the model in relation to 
 
 None. This Dart package has no non-development dependencies on other packages.
 
+## Implementation Notes
+
+An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to.  Raising an Event does nothing if no subscribers.
+
+```dart
+var onChange = Event();
+onChange.raise();
+
+// onChange is lightweight
+// raise incurs no cost here as no subscribers
+```
+
+An Event can include a custom 'argument' [EventArgs], which supports the subscriber being supplied with some data related to the Event.
+
+```dart
+class ChangeArgs extends EventArgs {
+  int value;
+  ChangeArgs(this.value);
+}
+
+var onChange = Event<ChangeArgs>();
+onChange.raise(ChangeArgs(61));
+
+// ChangeArgs, and hence its value 61, is passed to all subscribers
+```
+
+An Event can also optionally supply the subscriber with the 'sender' of the Event. Typically this is the object that raises the Event.
+
+// TODO: show example of "Sender Event Pattern".
+
 ## Examples
 
-Two examples are provided. The first shows an Event, without an argument provided to handlers (subscribers). The second, shows an Event which does provide a custom argument to the handlers.
+Two examples are shown below. The first shows an Event, without an argument provided to handlers (subscribers). The second, shows an Event which does provide a custom argument to the handlers.
 
 
 #### Example 1: A simple Event with no argument
