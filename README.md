@@ -14,7 +14,11 @@ As developers, we understand that dividing independent functionality into separa
 
 #### An elevator example
 
-Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it.  There might be a diagnostics UI written in Flutter, a console (CUI) interface, as well as as a module that only exposes a programmatic interface that external programs might consume to control the elevator. There might be other 'consumers' of the domain model, but the model need not care as it knows nothing of them.
+Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it.  There might be a diagnostics UI written in Flutter, a console (CUI) interface, as well as as a module that only exposes a programmatic interface that external programs might consume to control the elevator.
+
+![](https://www.dropbox.com/s/wt1v75g5s5wwli1/event-example-small.jpg?raw=true)
+
+There might be other 'consumers' of the domain model, but the model need not care as it knows nothing of them.
 
 Or does it need to?
 
