@@ -1,6 +1,6 @@
 name: event
-description: Provides for the creation of custom Events, that allow interested subscribers to be notified that something has happened.
-  Provides a notification mechanism across independent packages/layers/modules.
+description: Create lightweight custom Events, that allow interested subscribers to be notified that something has happened.
+  Provides a notification mechanism across independent packages/layers/modules. 
 version: 1.0.0
 homepage: https://github.com/aryehof/event
 

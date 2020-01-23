@@ -12,7 +12,8 @@ import 'eventargs.dart';
 typedef EventHandler<T extends EventArgs> = void Function(Object sender, T args);
 
 /// Represents an Event as some number of handlers (subscribers) that can be
-/// notified when a condition occurs, by using the [raise] method.
+/// notified when a condition occurs, by using the [raise] (or [raiseWithSender])
+///  method.
 ///
 /// See also [EventArgs].
 ///
@@ -165,6 +166,7 @@ class Event<T extends EventArgs> {
     }
   }
 
+  /// Represent this [Event] as its name
   @override
   String toString() {
     return runtimeType.toString();

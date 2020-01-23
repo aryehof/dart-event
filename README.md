@@ -2,7 +2,7 @@
 
 [![Pub Package](https://img.shields.io/pub/v/event.svg?style=flat-square)](https://pub.dev/packages/event)
 
-Provides for the creation of custom Events, that allow interested subscribers to be notified that something has happened. Provides a notification mechanism across independent packages/layers/modules.
+Supports the creation of lightweight custom Events, that allow interested subscribers to be notified that something has happened. Provides a notification mechanism across independent packages/layers/modules.
 
 This package is inspired by the `C#` language's implementation of `Events` and `Delegates`.
 
@@ -10,7 +10,27 @@ This package is inspired by the `C#` language's implementation of `Events` and `
 
 As developers, we understand that dividing independent functionality into separate modules (packages) is something to which we should aspire.  It can be ideal to model our problem domain independent of user interface, other systems, and technical plumbing. Equally, independent pieces of infrastructure benefit from being in separate modules (packages). Doing so has the same attraction as the decomposition of functionality into separate subroutines, albeit at a larger scale. Let's divide a large problem into smaller pieces, that can be reasoned about and worked on independently, and then re-combined to represent a solution to the problem.
 
-// TODO
+> To make something `independent`, it should should know nothing of the things that might depend on it. -- Aryeh Hoffman
+
+#### An elevator example
+
+Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it.  There might be a diagnostics UI written in Flutter, a console (CUI) interface, as well as as a module that only exposes a programmatic interface that external programs might consume to control the elevator. There might be other 'consumers' of the domain model, but that model need not care as it knows nothing of them.
+
+Or does it need to? How do these 'consumers' know when something has happened in the model?  In the case of the elevator, the model might be connected to real physical elevator through a manufacturer supplied control library, which in turn talks to the elevators programmable logic controller (PLC).
+
+How can the physical elevator report that something happened through the control library to the model and in turn to each of the three (or more) consumers? The model knows nothing of its consumers. Likewise, an independent manufacturers control library knows nothing of your elevator domain model.
+
+> How can something that is independent and in a separate module (package), notify a consumer it doesn't know, that something has happened?
+
+##### The solution
+
+The answer provided in this package, is to model an Event that can be published by an independent module (package), and subscribed to by a consumer elsewhere.  An Event represents that something has happened. It can be created and raised (triggered) without the publisher having any connection to those that might be consuming it.
+
+In the case of the elevator, the manufacturers control library can indicate that something in the real elevator happened (via the PLC) by publishing an Event. The domain model can subscribe to those Events where applicable, and cause some change in the model if required - perhaps updating the floor the current elevator is on.
+
+Likewise, the domain model can publish Events which the three consumers of the model can choose to subscribe to.
+
+Note that the three consumers of the model, as well as the model in relation to the elevator control library, remain `independent`.
 
 ## Dependencies
 
@@ -30,7 +50,7 @@ void main() {
   /// An incrementing counter.
   var c = Counter();
 
-  // subscribe to the custom event
+  // Subscribe to the custom event
   c.onValueChanged + (source, args) => print('boom');
 
   c.increment();
