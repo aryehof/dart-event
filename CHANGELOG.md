@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.3  (2020-01-22)
+
+- Added image of elevator example to README.
+
 ## Version 1.0.2  (2020-01-22)
 
 - Updated reference to Flutter [EventSubscriber] in the README.
