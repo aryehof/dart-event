@@ -14,11 +14,13 @@ As developers, we understand that dividing independent functionality into separa
 
 #### An elevator example
 
-Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it.  There might be a diagnostics UI written in Flutter, a console (CUI) interface, as well as as a module that only exposes a programmatic interface that external programs might consume to control the elevator. There might be other 'consumers' of the domain model, but that model need not care as it knows nothing of them.
+Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it.  There might be a diagnostics UI written in Flutter, a console (CUI) interface, as well as as a module that only exposes a programmatic interface that external programs might consume to control the elevator. There might be other 'consumers' of the domain model, but the model need not care as it knows nothing of them.
 
-Or does it need to? How do these 'consumers' know when something has happened in the model?  In the case of the elevator, the model might be connected to real physical elevator through a manufacturer supplied control library, which in turn talks to the elevators programmable logic controller (PLC).
+Or does it need to?
 
-How can the physical elevator report that something happened through the control library to the model and in turn to each of the three (or more) consumers? The model knows nothing of its consumers. Likewise, an independent manufacturers control library knows nothing of your elevator domain model.
+How do these 'consumers' know when something has happened in the model?  In the case of the elevator, the model might be connected to a real physical elevator through a manufacturer supplied control library, which in turn talks to the elevator's programmable logic controller (PLC).
+
+How can the physical elevator report that something happened through the control library to the model, and in turn to each of the three (or more) consumers? The model knows nothing of its consumers. Likewise, an independent manufacturers control library knows nothing of your elevator domain model.
 
 > How can something that is independent and in a separate module (package), notify a consumer it doesn't know, that something has happened?
 
@@ -38,7 +40,7 @@ None. This Dart package has no non-development dependencies on other packages.
 
 ## Implementation Notes
 
-An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to.  Raising an Event does nothing if no subscribers.
+An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to.  Raising an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
 
 ```dart
 var onChange = Event();
@@ -177,9 +179,7 @@ class ValueEventArgs extends EventArgs {
 
 ## See also
 
-// TODO: EventSubscriber requires update
-
-[EventSubscriber][eventsubscriber] - subscribe to Events in `Flutter` that update the enclosed Widget.
+[EventSubscriber][eventsubscriber] - A Flutter Widget that can subscribe to an [Event]. Updates (rebuilds) when notified.
 
 ## Features and bugs
 
