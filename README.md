@@ -10,7 +10,7 @@ This package is inspired by the `C#` language's implementation of `Events` and `
 
 As developers, we understand that dividing independent functionality into separate modules (packages) is something to which we should aspire.  It can be ideal to model our problem domain independent of user interface, other systems, and technical plumbing. Equally, independent pieces of infrastructure benefit from being in separate modules (packages). Doing so has the same attraction as the decomposition of functionality into separate subroutines, albeit at a larger scale. Let's divide a large problem into smaller pieces, that can be reasoned about and worked on independently, and then re-combined to represent a solution to the problem.
 
-> To make something `independent`, it should should know nothing of the things that might depend on it. -- Aryeh Hoffman
+> To make something *independent*, it should should know nothing of the things that might depend on it. -- Aryeh Hoffman
 
 #### An elevator example
 
@@ -30,7 +30,7 @@ In the case of the elevator, the manufacturers control library can indicate that
 
 Likewise, the domain model can publish Events which the three consumers of the model can choose to subscribe to.
 
-Note that the three consumers of the model, as well as the model in relation to the elevator control library, remain `independent`.
+Note that the three consumers of the model, as well as the model in relation to the elevator control library, remain *independent*.
 
 ## Dependencies
 
@@ -184,5 +184,5 @@ class ValueEventArgs extends EventArgs {
 Please file feature requests and bugs at the [issue tracker][tracker].
 
 [eventsubscriber]: https://pub.dev/packages/eventsubscriber
-[tracker]: https://github.com/aryehof/event/issues
+[tracker]: https://github.com/aryehof/dart-event/issues
 

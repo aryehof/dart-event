@@ -2,7 +2,7 @@ name: event
 description: Create lightweight custom Events, that allow interested subscribers to be notified that something has happened.
   Provides a notification mechanism across independent packages/layers/modules. 
 version: 1.0.0
-homepage: https://github.com/aryehof/event
+homepage: https://github.com/aryehof/dart-event
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
