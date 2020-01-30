@@ -1,20 +1,42 @@
 import 'package:event/event.dart';
 
+/*
+Summary
+
+1. An Event onValueChanged is declared in the Counter class
+2. It provides a custom argument to subscribers of the event
+      as specified in the ValueEventArgs class at the
+       bottom of this page.
+   Note that providing an argument to an Event is optional.
+3. A subscriber to the Event is added in the main() method.
+4. The Event (with custom argument) is broadcast (notified) to
+      subscribers in the Counter's  increment and reset methods.
+*/
+
 void main() {
   var c = Counter();
 
-  // subscribe to the custom event
-  c.onValueChanged + (source, args) => print('value changed to ${args.changedValue}');
+  // Subscribe to the custom Event.
+  c.onValueChanged.subscribe((args) => print('value changed to ${args.changedValue}'));
 
+  // The '+' operator is a shortcut for the subscribe method.
+  // It is directly equivalent to ...
+  // c.onValueChanged + (args) => print('value changed to ${args.changedValue}');
+
+  // Increment the Counter. Subscribers are notified.
   c.increment();
+
+  // Reset the Counter to 0. Subscribers are notified.
   c.reset();
 }
 
 //-----------------
 
-/// Represents a number counter that can be incremented.
+/// Represents an example number counter that can be incremented.
+///
 /// Notifies [Event] handlers (subscribers) when incremented.
-/// The notification includes the changed [value] (see [ValueEventArgs]).
+/// The notification includes some custom arguments - in this case
+/// the changed [value] (see [ValueEventArgs] below).
 class Counter {
   /// The current [Counter] value.
   int value = 0;
@@ -25,20 +47,21 @@ class Counter {
   /// Increment the [Counter] [value] by 1.
   void increment() {
     value++;
-    // raise the event
-    onValueChanged.raise(ValueEventArgs(value));
+    // notify subscribers of the change in value
+    onValueChanged.broadcast(ValueEventArgs(value));
   }
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
     value = 0;
-    onValueChanged.raise(ValueEventArgs(value));
+    // notify subscribers of the change in value
+    onValueChanged.broadcast(ValueEventArgs(value));
   }
 }
 
 //-----------------
 
-/// Represents the arguments provided to handlers
+/// Represents some custom arguments provided to subscribers
 /// when an [Event] occurs.
 class ValueEventArgs extends EventArgs {
   int changedValue;
