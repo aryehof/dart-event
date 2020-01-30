@@ -14,7 +14,7 @@ As developers, we understand that dividing independent functionality into separa
 
 #### An elevator example
 
-Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it.  There might be a diagnostics UI written in Flutter, a console (CUI) interface, as well as as a module that only exposes a programmatic interface that external programs might consume to control the elevator.
+Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it.  There might be a diagnostics UI written in `Flutter`, a console (CUI) interface, as well as as a module that only exposes a programmatic interface (API) that external programs might consume to control the elevator.
 
 ![](https://www.dropbox.com/s/wt1v75g5s5wwli1/event-example-small.jpg?raw=true)
 
@@ -30,9 +30,9 @@ How can the physical elevator report that something happened through the control
 
 ##### The solution
 
-The answer provided in this package, is to model an Event that can be published by an independent module (package), and subscribed to by a consumer elsewhere.  An Event represents that something has happened. It can be created and raised (triggered) without the publisher having any connection to those that might be consuming it.
+The answer provided in this package, is to model an Event that can be published by an independent module (package), and subscribed to by a consumer elsewhere.  An Event represents that something has happened. It can be created and broadcast (triggered) without the publisher having any connection to those that might be consuming it.
 
-In the case of the elevator, the manufacturers control library can indicate that something in the real elevator happened (via the PLC) by publishing an Event. The domain model can subscribe to those Events where applicable, and cause some change in the model if required - perhaps updating the floor the current elevator is on.
+In the case of the elevator, the manufacturer's control library can indicate that something in the real elevator happened (via the PLC) by publishing an Event. The domain model can subscribe to those Events where applicable, and cause some change in the model if required - perhaps updating the floor the current elevator is on.
 
 Likewise, the domain model can publish Events which the three consumers of the model can choose to subscribe to.
 
@@ -44,33 +44,32 @@ None. This Dart package has no non-development dependencies on other packages.
 
 ## Implementation Notes
 
-An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to.  Raising an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
+An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to.  Broadcasting an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
 
 ```dart
 var onChange = Event();
-onChange.raise();
+onChange.broadcast();
 
 // onChange is lightweight
-// raise incurs no cost here as no subscribers
+// broadcast incurs no cost here as no subscribers
 ```
 
 An Event can include a custom 'argument' [EventArgs], which supports the subscriber being supplied with some data related to the Event.
 
 ```dart
+// A custom 'argument' class
 class ChangeArgs extends EventArgs {
   int value;
   ChangeArgs(this.value);
 }
 
 var onChange = Event<ChangeArgs>();
-onChange.raise(ChangeArgs(61));
+onChange.broadcast(ChangeArgs(61));
 
 // ChangeArgs, and hence its value 61, is passed to all subscribers
 ```
 
-An Event can also optionally supply the subscriber with the 'sender' of the Event. Typically this is the object that raises the Event.
-
-// TODO: show example of "Sender Event Pattern".
+// TODO: show example of "Wrapped Event Pattern".
 
 ## Examples
 
@@ -87,7 +86,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.onValueChanged + (source, args) => print('boom');
+  c.onValueChanged + (args) => print('boom');
 
   c.increment();
   c.reset();
@@ -111,14 +110,15 @@ class Counter {
   /// Increment the [Counter] [value] by 1.
   void increment() {
     value++;
-    // raise the event
-    onValueChanged.raise();
+    // Broadcast the change
+    onValueChanged.broadcast();
   }
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
     value = 0;
-    onValueChanged.raise();
+    // Broadcast the change
+    onValueChanged.broadcast();
   }
 }
 ```
@@ -132,8 +132,8 @@ void main() {
    /// An incrementing counter.
   var c = Counter();
 
-  // subscribe to the custom event
-  c.onValueChanged + (source, args) => print('value changed to ${args.changedValue}');
+  // Subscribe to the custom event
+  c.onValueChanged + (args) => print('value changed to ${args.changedValue}');
 
   c.increment();
   c.reset();
@@ -153,20 +153,22 @@ class Counter {
   /// The current [Counter] value.
   int value = 0;
 
-  /// A custom [Event] of type [ValueEventArgs]
+  /// A custom [Event] with argument [ValueEventArgs]
+  /// See [ValueEventArgs] class below.
   final onValueChanged = Event<ValueEventArgs>();
 
   /// Increment the [Counter] [value] by 1.
   void increment() {
     value++;
-    // raise the event
-    onValueChanged.raise(ValueEventArgs(value));
+    // Broadcast the change, supplying the value
+    onValueChanged.broadcast(ValueEventArgs(value));
   }
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
     value = 0;
-    onValueChanged.raise(ValueEventArgs(value));
+    // Broadcast the change, supplying the value
+    onValueChanged.broadcast(ValueEventArgs(value));
   }
 }
 
@@ -176,7 +178,6 @@ class Counter {
 /// when an [Event] occurs.
 class ValueEventArgs extends EventArgs {
   int changedValue;
-
   ValueEventArgs(this.changedValue);
 }
 ```

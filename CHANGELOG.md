@@ -1,5 +1,50 @@
 # Changelog
 
+## Version 1.1.0  (2020-01-29)
+
+#### Breaking Change
+
+The function signature for an Event has been simplified. The `sender` argument has been removed, leaving only the need to provide an optional `argument` derived from type `EventArgs`.
+
+The `sender` argument was previously intended to be used to provide the source of the Event, or the object in which the Event was declared, to a subscriber. This can be equally well done within an EventArg passed as an argument to a subscriber.
+
+```dart
+// Before
+// subscribe to onValueChanged Event
+myCounter.onValueChanged + (sender, args) => print('before');
+
+// Now
+// subscribe to onValueChanged Event
+myCounter.onValueChanged + (args) => print('after');
+```
+
+#### Other Breaking Changes
+
+- Renamed `addHandler` and `removeHandler` methods to `subscribe` and `unsubscribe` respectively.
+- Renamed `raise` methods to `broadcast`.
+- Method `broadcastWithSubject` removed to reflect to removal of `sender` described above.
+- The `count` method has been renamed to `subscriberCount'
+
+#### Other
+
+- Two general purpose EventArg derived classes (`EventArgs1` and `EventArgs2`) have been included, which offers a quick alternative to producing your own custom EventArgs class.
+
+EventArgs1 supports one generic value, while EventArgs2 supports two. Example:-
+
+```dart
+// EventArgs1 (one value)
+var e = Event<EventArgs1<String>>();
+e.subscribe((args) => print(args.value));
+e.broadcast(EventArgs1('hello'));
+// prints hello
+
+// EventArgs2 (two values)
+var e = Event<EventArgs2<String, int>>();
+e.subscribe((args) => print('${args.value1} - ${args.value2}'));
+e.broadcast(EventArgs2('boom', 37));
+// prints boom - 37
+```
+
 ## Version 1.0.3  (2020-01-22)
 
 - Added image of elevator example to README.
