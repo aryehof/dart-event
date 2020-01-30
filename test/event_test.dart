@@ -7,26 +7,26 @@ void main() {
 
     test('Test count correct with no handlers', () {
       var e = Event();
-      expect(e.count, equals(0));
+      expect(e.subscriberCount, equals(0));
     });
 
     test('Test count correct with added handlers', () {
       var e = Event();
       e + (args) => print('foo');
       e + (args) => print('bar');
-      expect(e.count, equals(2));
+      expect(e.subscriberCount, equals(2));
     });
 
     test('addHandler adds a handler', () {
       var e = Event();
       e.subscribe((args) => {});
-      expect(e.count, equals(1));
+      expect(e.subscriberCount, equals(1));
     });
 
     test('"+" operator adds a handler', () {
       var e = Event();
       e + (args) => {};
-      expect(e.count, equals(1));
+      expect(e.subscriberCount, equals(1));
     });
 
     test('removeHandler removes a handler', () {
@@ -34,7 +34,7 @@ void main() {
       var myHandler = (args) => {};
 
       e.subscribe(myHandler);
-      expect(e.count, equals(1));
+      expect(e.subscriberCount, equals(1));
 
       var result = e.unsubscribe(myHandler);
       expect(result, equals(true));
@@ -42,7 +42,7 @@ void main() {
       result = e.unsubscribe(myHandler);
       expect(result, equals(false));
 
-      expect(e.count, equals(0));
+      expect(e.subscriberCount, equals(0));
     });
 
     test('"-" removes a handler', () {
@@ -50,7 +50,7 @@ void main() {
       var myHandler = (args) => {};
 
       e.subscribe(myHandler);
-      expect(e.count, equals(1));
+      expect(e.subscriberCount, equals(1));
 
       var result = e - myHandler;
       expect(result, equals(true));
@@ -58,7 +58,7 @@ void main() {
       result = e - myHandler;
       expect(result, equals(false));
 
-      expect(e.count, equals(0));
+      expect(e.subscriberCount, equals(0));
     });
 
     test('broadcast calls no args handler', () {
