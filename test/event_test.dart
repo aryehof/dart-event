@@ -3,9 +3,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('Event Tests', () {
-    // a global variable used to test sender argument in raise method
-    var year = 2020;
-
     // setUp(() {});
 
     test('Test count correct with no handlers', () {
@@ -15,34 +12,34 @@ void main() {
 
     test('Test count correct with added handlers', () {
       var e = Event();
-      e + (sender, args) => print('foo');
-      e + (sensenderder, args) => print('bar');
+      e + (args) => print('foo');
+      e + (args) => print('bar');
       expect(e.count, equals(2));
     });
 
     test('addHandler adds a handler', () {
       var e = Event();
-      e.addHandler((sender, args) => {});
+      e.subscribe((args) => {});
       expect(e.count, equals(1));
     });
 
     test('"+" operator adds a handler', () {
       var e = Event();
-      e + (sender, args) => {};
+      e + (args) => {};
       expect(e.count, equals(1));
     });
 
     test('removeHandler removes a handler', () {
       var e = Event();
-      var myHandler = (sender, args) => {};
+      var myHandler = (args) => {};
 
-      e.addHandler(myHandler);
+      e.subscribe(myHandler);
       expect(e.count, equals(1));
 
-      var result = e.removeHandler(myHandler);
+      var result = e.unsubscribe(myHandler);
       expect(result, equals(true));
 
-      result = e.removeHandler(myHandler);
+      result = e.unsubscribe(myHandler);
       expect(result, equals(false));
 
       expect(e.count, equals(0));
@@ -50,9 +47,9 @@ void main() {
 
     test('"-" removes a handler', () {
       var e = Event();
-      var myHandler = (sender, args) => {};
+      var myHandler = (args) => {};
 
-      e.addHandler(myHandler);
+      e.subscribe(myHandler);
       expect(e.count, equals(1));
 
       var result = e - myHandler;
@@ -64,59 +61,77 @@ void main() {
       expect(e.count, equals(0));
     });
 
-    test('raise calls no args handler', () {
+    test('broadcast calls no args handler', () {
       var changedInHandler = -1;
 
       var e = Event();
-      e.addHandler((sender, args) => {changedInHandler = 61});
-      e.raise();
+      e.subscribe((args) => {changedInHandler = 61});
+      e.broadcast();
       expect(changedInHandler, equals(61));
     });
 
-    test('raise calls a handler with EventArgs', () {
+    test('broadcast calls a handler with EventArgs', () {
       // a value expected to change when event is raised
       var changedInHandler = -1;
 
       var e = Event<EventArgs1<int>>();
-      e.addHandler((sender, args) => {changedInHandler = args.value});
-      e.raise(EventArgs1(39));
+      e.subscribe((args) => {changedInHandler = args.value});
+      e.broadcast(EventArgs1(39));
 
       expect(changedInHandler, equals(39));
     });
 
-    test('sender should be null if not using raiseWithSender', () {
-      var _sender;
+    test('EventArgs1', () {
+      String value;
 
-      var e = Event<EmptyEventArgs>();
-      e.addHandler((sender, args) => {_sender = sender});
-      e.raise();
-      expect(_sender, isNull);
+      var e = Event<EventArgs1<String>>();
+      e.subscribe((args) => value = args.value);
+      e.broadcast(EventArgs1('hello'));
+      expect(value, equals('hello'));
     });
 
-    test('sender pattern', () {
-      var globalYear = 0;
+    test('EventArgs2', () {
+      String value1;
+      int value2;
 
-      // "Sender Event Pattern"
+      var e = Event<EventArgs2<String, int>>();
+      e.subscribe((args) {
+        value1 = args.value1;
+        value2 = args.value2;
+      });
+      e.broadcast(EventArgs2('boom', 37));
+      expect(value1, equals('boom'));
+      expect(value2, equals(37));
+    });
+
+    test('wrapped Event pattern', () {
+      var currentYear = 2020;
+      var changedTo;
+
+      // "wrapped Event Pattern"
       // 1. declare the Event.
-      //    By convention, use an 'Event' suffix for the name
-      var changeEvent = Event();
+      //    By convention, use an 'Event' suffix for the name.
+      var changeEvent = Event<EventArgs1>();
 
-      // 2. Wrap [raiseWithSender] with an on... function.
-      //    By convention use an 'on' prefix for the name.
-      void onChange(EventArgs args) {
-        // Typically the [sender] would be 'this'. A global variable
+      // 2. Wrap [broadcastWithContext] with an on... function.
+      //    By convention use an '_on' prefix for the name.
+      //    This is called to broadcast the Event to subscribers.
+      void _onChange() {
+        // Typically the [context] would be 'this'. A global variable
         // is used in this case because 'this' is not available in a
         // test.
-        changeEvent.raiseWithSender(year, args);
+        // changeEvent.broadcastWithContext(year, args);
+
+        changeEvent.broadcast(EventArgs1(currentYear));
       }
 
       // 3. add a handler (where applicable) to the Event
-      changeEvent.addHandler((sender, args) => {globalYear = sender});
+      changeEvent.subscribe((args) => changedTo = args.value);
 
       // 4. call the wrapped on... function to raise the Event
-      onChange(EmptyEventArgs());
+      _onChange();
 
-      expect(globalYear, equals(2020));
+      expect(changedTo, equals(2020));
     });
   });
 }
