@@ -98,6 +98,12 @@ class Event<T extends EventArgs> {
     return unsubscribe(handler);
   }
 
+  /// Removes all subscribers (handlers).
+  void unsubscribeAll() {
+    _handlers.clear();
+    _handlers = null;
+  }
+
   /// Returns the number of handlers (subscribers).
   /// ```dart
   /// // Example

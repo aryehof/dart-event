@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1.1  (2020-02-03)
+
+- Add new method `unsubscribeAll', to unsubscribe all subscribers (handlers).
+
 ## Version 1.1.0  (2020-01-29)
 
 #### Breaking Change
