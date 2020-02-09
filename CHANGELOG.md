@@ -1,8 +1,16 @@
-# Changelog
+# Changelog - Event
+
+## Version 1.1.2  (2020-02-09)
+
+- EventArgs changes
+  - Added `BasicEventArgs` as a standard `EventArgs` derived type.  It includes a `whenOccurred` field that contains the date and time the Event was `broadcast`, as well as an optional `description` field.
+  - Renamed `EventArgs1` and `EventArgs2` to `GenericEventArgs1` and `GenericEventArgs2` respectively, to better indicate their purpose. Both are now derived from `BasicEventArgs`, meaning that they have `whenOccurred` and (optional) `description` fields.
+  - Improvements to documentation
+- Minor improvements to Event documentation.
 
 ## Version 1.1.1  (2020-02-03)
 
-- Add new method `unsubscribeAll', to unsubscribe all subscribers (handlers).
+- Add new method `unsubscribeAll`, to unsubscribe all subscribers (handlers).
 
 ## Version 1.1.0  (2020-01-29)
 
