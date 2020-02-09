@@ -6,11 +6,15 @@ Supports the creation of lightweight custom Dart Events, that allow interested s
 
 This package is inspired by the `C#` language's implementation of `Events` and `Delegates`.
 
+## See also
+
+[EventSubscriber][eventsubscriber] - A Flutter Widget that can subscribe to an [Event] with optional arguments. Updates (rebuilds) when notified.
+
 ## Background
 
 As developers, we understand that dividing independent functionality into separate modules (packages) is something to which we should aspire.  It can be ideal to model our problem domain independent of user interface, other systems, and technical plumbing. Equally, independent pieces of infrastructure benefit from being in separate modules (packages). Doing so has the same attraction as the decomposition of functionality into separate subroutines, albeit at a larger scale. Let's divide a large problem into smaller pieces, that can be reasoned about and worked on independently, and then re-combined to represent a solution to the problem.
 
-> To make something *independent*, it should should know nothing of the things that might depend on it. -- Aryeh Hoffman
+> To make something *independent*, it should should know nothing of the things that might depend on it.
 
 #### An elevator example
 
@@ -47,8 +51,8 @@ None. This Dart package has no non-development dependencies on other packages.
 An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to.  Broadcasting an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
 
 ```dart
-var onChange = Event();
-onChange.broadcast();
+var changeEvent = Event();
+changeEvent.broadcast();
 
 // onChange is lightweight
 // broadcast incurs no cost here as no subscribers
@@ -63,13 +67,13 @@ class ChangeArgs extends EventArgs {
   ChangeArgs(this.value);
 }
 
-var onChange = Event<ChangeArgs>();
-onChange.broadcast(ChangeArgs(61));
+var changeEvent = Event<ChangeArgs>();
+changeEvent.broadcast(ChangeArgs(61));
 
 // ChangeArgs, and hence its value 61, is passed to all subscribers
 ```
 
-// TODO: show example of "Wrapped Event Pattern".
+// TODO: show example of "Named Event Pattern".
 
 ## Examples
 
@@ -86,7 +90,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.onValueChanged + (args) => print('boom');
+  c.valueChangedEvent + (args) => print('boom');
 
   c.increment();
   c.reset();
@@ -105,20 +109,20 @@ class Counter {
   int value = 0;
 
   /// A custom [Event]
-  final onValueChanged = Event();
+  final valueChangedEvent = Event();
 
   /// Increment the [Counter] [value] by 1.
   void increment() {
     value++;
     // Broadcast the change
-    onValueChanged.broadcast();
+    valueChangedEvent.broadcast();
   }
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
     value = 0;
     // Broadcast the change
-    onValueChanged.broadcast();
+    valueChangedEvent.broadcast();
   }
 }
 ```
@@ -133,7 +137,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.onValueChanged + (args) => print('value changed to ${args.changedValue}');
+  c.valueChangedEvent + (args) => print('value changed to ${args.changedValue}');
 
   c.increment();
   c.reset();
@@ -155,20 +159,20 @@ class Counter {
 
   /// A custom [Event] with argument [ValueEventArgs]
   /// See [ValueEventArgs] class below.
-  final onValueChanged = Event<ValueEventArgs>();
+  final valueChangedEvent = Event<ValueEventArgs>();
 
   /// Increment the [Counter] [value] by 1.
   void increment() {
     value++;
     // Broadcast the change, supplying the value
-    onValueChanged.broadcast(ValueEventArgs(value));
+    valueChangedEvent.broadcast(ValueEventArgs(value));
   }
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
     value = 0;
     // Broadcast the change, supplying the value
-    onValueChanged.broadcast(ValueEventArgs(value));
+    valueChangedEvent.broadcast(ValueEventArgs(value));
   }
 }
 
@@ -181,10 +185,6 @@ class ValueEventArgs extends EventArgs {
   ValueEventArgs(this.changedValue);
 }
 ```
-
-## See also
-
-[EventSubscriber][eventsubscriber] - A Flutter Widget that can subscribe to an [Event]. Updates (rebuilds) when notified.
 
 ## Features and bugs
 
