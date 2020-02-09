@@ -5,7 +5,7 @@
 import 'eventargs.dart';
 
 /// Defines the function (callback) signature of an Event handler.
-/// It is a function that takes an argument of Type [EventArgs],
+/// It is a function that takes an argument of type [EventArgs],
 /// or one derived from it.
 ///
 /// See also [EventArgs].
@@ -19,7 +19,7 @@ typedef EventHandler<T extends EventArgs> = void Function(T args);
 /// =====
 ///
 /// ```dart
-/// // An example of an [Event] with no argument.
+/// // An example of a simple [Event] with no argument.
 /// final onValueChanged = Event();
 /// counter.onValueChanged + (_) => print('changed'); // add a handler
 /// onValueChanged.broadcast(); // broadcast the [Event] to subscribers
@@ -128,7 +128,7 @@ class Event<T extends EventArgs> {
   /// onValueChanged.broadcast();
   ///
   /// // With an argument [EventArg]
-  /// onValueChanged2.broadcast(ChangedValue(value));
+  /// onValueChanged2.broadcast(ChangedValue(3.14159));
   /// ```
   void broadcast([T args]) {
     // ignore if no handlers
