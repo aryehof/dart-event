@@ -74,19 +74,32 @@ void main() {
       // a value expected to change when event is raised
       var changedInHandler = -1;
 
-      var e = Event<EventArgs1<int>>();
+      var e = Event<GenericEventArgs1<int>>();
       e.subscribe((args) => {changedInHandler = args.value});
-      e.broadcast(EventArgs1(39));
+      e.broadcast(GenericEventArgs1(39));
 
       expect(changedInHandler, equals(39));
     });
 
+    test('BasicEventArgs fields - whenOccurred and description', () {
+      DateTime eventOccurred;
+      String description;
+
+      var e = Event<BasicEventArgs>();
+      e.subscribe((args) {
+        eventOccurred = args.whenOccurred;
+        description = args.description;
+      });
+      e.broadcast(BasicEventArgs(description: 'test description'));
+      expect(DateTime.now().difference(eventOccurred), lessThan(Duration(milliseconds: 250)));
+      expect(description, equals('test description'));
+    });
     test('EventArgs1', () {
       String value;
 
-      var e = Event<EventArgs1<String>>();
+      var e = Event<GenericEventArgs1<String>>();
       e.subscribe((args) => value = args.value);
-      e.broadcast(EventArgs1('hello'));
+      e.broadcast(GenericEventArgs1('hello'));
       expect(value, equals('hello'));
     });
 
@@ -94,12 +107,12 @@ void main() {
       String value1;
       int value2;
 
-      var e = Event<EventArgs2<String, int>>();
+      var e = Event<GenericEventArgs2<String, int>>();
       e.subscribe((args) {
         value1 = args.value1;
         value2 = args.value2;
       });
-      e.broadcast(EventArgs2('boom', 37));
+      e.broadcast(GenericEventArgs2('boom', 37));
       expect(value1, equals('boom'));
       expect(value2, equals(37));
     });
@@ -111,7 +124,7 @@ void main() {
       // "wrapped Event Pattern"
       // 1. declare the Event.
       //    By convention, use an 'Event' suffix for the name.
-      var changeEvent = Event<EventArgs1>();
+      var changeEvent = Event<GenericEventArgs1>();
 
       // 2. Wrap [broadcastWithContext] with an on... function.
       //    By convention use an '_on' prefix for the name.
@@ -122,7 +135,7 @@ void main() {
         // test.
         // changeEvent.broadcastWithContext(year, args);
 
-        changeEvent.broadcast(EventArgs1(currentYear));
+        changeEvent.broadcast(GenericEventArgs1(currentYear));
       }
 
       // 3. add a handler (where applicable) to the Event
