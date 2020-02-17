@@ -81,16 +81,16 @@ void main() {
       expect(changedInHandler, equals(39));
     });
 
-    test('BasicEventArgs fields - whenOccurred and description', () {
+    test('StdEventArg fields - whenOccurred and description', () {
       DateTime eventOccurred;
       String description;
 
-      var e = Event<BasicEventArgs>();
+      var e = Event<StdEventArgs>();
       e.subscribe((args) {
         eventOccurred = args.whenOccurred;
         description = args.description;
       });
-      e.broadcast(BasicEventArgs(description: 'test description'));
+      e.broadcast(StdEventArgs(description: 'test description'));
       expect(DateTime.now().difference(eventOccurred), lessThan(Duration(milliseconds: 250)));
       expect(description, equals('test description'));
     });

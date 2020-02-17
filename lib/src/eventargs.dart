@@ -10,7 +10,7 @@ import 'package:event/event.dart';
 /// This is intended to be extended with your own custom
 /// class, if you want to provide subscribers with some
 /// data relating to the [Event].  Alternatively, use one
-/// of the supplied [EventArgs] derived classes: [BasicEventArgs],
+/// of the supplied [EventArgs] derived classes: [StdEventArgs],
 /// [GenericEventArgs1] or [GenericEventArgs2].
 ///
 /// ```dart
@@ -30,22 +30,22 @@ abstract class EventArgs {}
 ///
 /// ```dart
 /// // example declaration ...
-/// var myEvent = Event<BasicEventArgs>();
+/// var myEvent = Event<StdEventArgs>();
 /// // broadcast with an optional description ...
-/// myEvent.broadcast(BasicEventArgs(description: 'something'))
+/// myEvent.broadcast(StdEventArgs(description: 'something'))
 /// // in subscriber handler ...
 /// print(args.whenOccurred);
 /// print(args.description);
 /// ```
-class BasicEventArgs extends EventArgs {
+class StdEventArgs extends EventArgs {
   /// The date and time the [Event] was broadcast.
   DateTime whenOccurred;
 
-  /// An optional description.
+  /// An optional description or other information.
   String description;
 
-  /// Creates a new [BasicEventArgs], with an optional description.
-  BasicEventArgs({this.description}) {
+  /// Creates a new [StdEventArgs], with an optional description.
+  StdEventArgs({this.description}) {
     whenOccurred = DateTime.now();
   }
 }
@@ -62,7 +62,7 @@ class BasicEventArgs extends EventArgs {
 /// reader that there are no EventArgs.
 class EmptyEventArgs extends EventArgs {}
 
-/// Represents a [BasicEventArgs] derived class with one (generic) value.
+/// Represents a [StdEventArgs] derived class with one (generic) value.
 ///
 /// For use as a quick alternative to defining your own custom EventArgs
 /// class. Provides a [value] field that contains the value supplied on
@@ -79,7 +79,7 @@ class EmptyEventArgs extends EventArgs {}
 /// e.broadcast(GenericEventArgs1('hello'));
 /// // outputs: hello
 ///```
-class GenericEventArgs1<T> extends BasicEventArgs {
+class GenericEventArgs1<T> extends StdEventArgs {
   /// A generic value.
   T value;
 
@@ -87,7 +87,7 @@ class GenericEventArgs1<T> extends BasicEventArgs {
   GenericEventArgs1(this.value, {String description}) : super(description: description);
 }
 
-/// Represents a [BasicEventArgs] derived class with two (generic) values.
+/// Represents a [StdEventArgs] derived class with two (generic) values.
 ///
 /// For use as a quick alternative to defining your own custom EventArgs
 /// class. Provides [value1] and [value2] fields containing the values
@@ -102,7 +102,7 @@ class GenericEventArgs1<T> extends BasicEventArgs {
 /// e.broadcast(EventArgs2('boom', 37));
 /// // outputs: boom : 37
 ///```
-class GenericEventArgs2<T1, T2> extends BasicEventArgs {
+class GenericEventArgs2<T1, T2> extends StdEventArgs {
   /// A generic value.
   T1 value1;
   T2 value2;

@@ -1,5 +1,9 @@
 # Changelog - Event
 
+## Version 1.1.3  (2020-02-14)
+
+- BasicEventArgs renamed to StdEventArgs for clarity.
+
 ## Version 1.1.2  (2020-02-09)
 
 - EventArgs changes
