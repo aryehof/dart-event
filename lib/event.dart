@@ -9,4 +9,5 @@
 library event;
 
 export 'src/event.dart';
+export 'src/EventSubscriber.dart';
 export 'src/eventargs.dart';

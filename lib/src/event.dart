@@ -2,14 +2,8 @@
 // Use of this source code is governed by an Apache-2.0 license that can be
 // found in the LICENSE file.
 
+import 'EventSubscriber.dart';
 import 'eventargs.dart';
-
-/// Defines the function (callback) signature of an Event handler.
-/// It is a function that takes an argument of type [EventArgs],
-/// or one derived from it.
-///
-/// See also [EventArgs].
-typedef EventHandler<T extends EventArgs> = void Function(T args);
 
 /// Represents an Event as some number of handlers (subscribers) that can be
 /// notified when a condition occurs, by using the [broadcast] method.
@@ -29,79 +23,11 @@ typedef EventHandler<T extends EventArgs> = void Function(T args);
 /// counter.onValueChanged + (args) => print(args.changedValue); // add a handler
 /// onValueChanged.broadcast(ChangedValue(value)); // broadcast the [Event] to subscribers
 /// ```
-class Event<T extends EventArgs> {
-  /// The handlers (subscribers) associated with this [Event]. Instantiated
-  /// lazily (on demand) to reflect that an [Event] may have no subscribers,
-  /// and if so, should not incur the overhead of instantiating an empty [List].
-  List<EventHandler<T>> _handlers;
-
-  /// Adds a handler (callback) that will be executed when this
-  /// [Event] is raised using the [broadcast] method.
-  ///
-  /// See also the [+] shorcut version.
-  ///
-  /// ```dart
-  /// // Example
-  /// counter.onValueChanged.subscribe((args) => print('value changed'));
-  /// ```
-  void subscribe(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
-    // instantiate handlers if required
-    _handlers ??= [];
-    _handlers.add(handler);
-  }
-
-  /// Adds a handler (callback) that will be executed when this
-  /// [Event] is raised using the [broadcast] method.
-  ///
-  /// Uses "+" as an alternative syntax to the [subscribe] method
-  /// for adding a handler (callback) that will be executed when
-  /// this [Event] is fired using the [broadcast] method.
-  ///
-  /// ```dart
-  /// // Example
-  /// counter.onValueChanged + (args) => print('value changed');
-  /// ```
-  void operator +(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
-    subscribe(handler);
-  }
-
-  /// Removes a handler previously added to this [Event].
-  ///
-  /// Returns `true` if handler was in list, `false` otherwise.
-  /// This method has no effect if the handler is not in the list.
-  ///
-  /// See also the [-] shorcut version.
-  bool unsubscribe(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
-    return _handlers.remove(handler);
-  }
-
-  /// Removes a handler previously added to this [Event].
-  ///
-  /// Uses "-" as an alternative syntax to the [unsubscribe] method
-  /// to remove a handler from this [Event].
-  ///
-  /// Returns `true` if handler was in list, `false` otherwise.
-  /// This method has no effect if the handler is not in the list.
-  bool operator -(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
-    return unsubscribe(handler);
-  }
-
+class Event<T extends EventArgs> extends EventSubscriber<T> {
   /// Removes all subscribers (handlers).
   void unsubscribeAll() {
-    _handlers.clear();
-    _handlers = null;
+    handlers.clear();
+    handlers = null;
   }
 
   /// Returns the number of handlers (subscribers).
@@ -110,10 +36,10 @@ class Event<T extends EventArgs> {
   /// int numberOfHandlers = myEvent.subscriberCount
   /// ```
   int get subscriberCount {
-    if (_handlers == null) {
+    if (handlers == null) {
       return 0;
     } else {
-      return _handlers.length;
+      return handlers.length;
     }
   }
 
@@ -132,8 +58,8 @@ class Event<T extends EventArgs> {
   /// ```
   void broadcast([T args]) {
     // ignore if no handlers
-    if (_handlers != null) {
-      for (var handler in _handlers) {
+    if (handlers != null) {
+      for (var handler in handlers) {
         handler(args);
       }
     }
