@@ -10,6 +10,12 @@ This package is inspired by the `C#` language's implementation of `Events` and `
 
 [EventSubscriber][eventsubscriber] - A Flutter Widget that can subscribe to an [Event] with optional arguments. Updates (rebuilds) when notified.
 
+## What's New
+
+Events can now be optionally broadcast to a Dart stream through the `subscribeStream` method.
+
+See the Changelog for details on changes in each version.
+
 ## Background
 
 As developers, we understand that dividing independent functionality into separate modules (packages) is something to which we should aspire.  It can be ideal to model our problem domain independent of user interface, other systems, and technical plumbing. Equally, independent pieces of infrastructure benefit from being in separate modules (packages). Doing so has the same attraction as the decomposition of functionality into separate subroutines, albeit at a larger scale. Let's divide a large problem into smaller pieces, that can be reasoned about and worked on independently, and then re-combined to represent a solution to the problem.
@@ -54,11 +60,11 @@ An Event is lightweight. It maintains a list of subscribers, but that list is on
 var changeEvent = Event();
 changeEvent.broadcast();
 
-// onChange is lightweight
+// changeEvent is lightweight
 // broadcast incurs no cost here as no subscribers
 ```
 
-An Event can include a custom 'argument' [EventArgs], which supports the subscriber being supplied with some data related to the Event.
+An Event can include a custom 'argument' `EventArgs`, which supports the subscriber being supplied with some data related to the Event.
 
 ```dart
 // A custom 'argument' class
@@ -75,6 +81,24 @@ changeEvent.broadcast(ChangeArgs(61));
 
 // TODO: show example of "Named Event Pattern".
 
+### Broadcast to a Stream
+
+Dart streams enable a sequence of events to be filtered and transformed. One can subscribe an `Event` to a stream using the `subscribeStream` method.
+The rich range of mechanisms to filter and manipulate Streams become available.
+  
+Remember that the supplied [StreamSink] should be closed when no longer needed.
+  
+```dart
+// Example
+var e = Event();
+var sc = StreamController();
+
+e.subscribeStream(sc.sink);
+e.broadcast();
+
+sc.stream.listen((e) => print('boom'));
+sc.close();
+```
 ## Examples
 
 Two examples are shown below. The first shows an Event, without an argument provided to handlers (subscribers). The second, shows an Event which does provide a custom argument to the handlers.

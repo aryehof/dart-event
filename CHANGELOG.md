@@ -1,5 +1,25 @@
 # Changelog - Event
 
+## Version 1.1.4  (2020-06-10)
+
+- Added a `subscribeStream` method to Event, which supports the broadcasting of Events to a Dart `Stream` [StreamSink].
+  
+  This allows a sequence of broadcast Events to be represented and manipulated as a Dart `Stream`. The rich range of mechanisms to filter and manipulate Streams become available.
+  
+  Remember that the supplied [StreamSink] should be closed when no longer needed.
+  
+  ```dart
+  // Example
+   var e = Event();
+   var sc = StreamController();
+  
+   e.subscribeStream(sc.sink);
+   e.broadcast();
+  
+   sc.stream.listen((e) => print('boom'));
+   sc.close();
+  ```
+  
 ## Version 1.1.3  (2020-02-14)
 
 - BasicEventArgs renamed to StdEventArgs for clarity.

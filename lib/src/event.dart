@@ -2,6 +2,8 @@
 // Use of this source code is governed by an Apache-2.0 license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'eventargs.dart';
 
 /// Defines the function (callback) signature of an Event handler.
@@ -82,6 +84,36 @@ class Event<T extends EventArgs> {
       throw ArgumentError('a handler must be specified');
     }
     return _handlers.remove(handler);
+  }
+
+  /// Subscribes a Stream [StreamSink] to an Event.
+  ///
+  /// This allows a sequence of broadcast Events to
+  /// be represented and manipulated as a Stream. The
+  /// rich range of mechanisms to filter and manipulate
+  /// a Stream become available.
+  ///
+  /// Remember that the supplied [StreamSink] should
+  /// be closed when no longer needed.
+  ///
+  /// ```dart
+  /// // Example
+  ///  var e = Event();
+  ///  var sc = StreamController();
+  ///
+  ///  e.subscribeStream(sc.sink);
+  ///  e.broadcast();
+  ///
+  ///  sc.stream.listen((e) => print('boom'));
+  ///  sc.close();`
+  /// ```
+  void subscribeStream(StreamSink sink) {
+    if (sink is! StreamSink) {
+      throw ArgumentError('a Sink must be specified');
+    }
+
+    _handlers ??= [];
+    _handlers.add((args) => {sink.add(args)});
   }
 
   /// Removes a handler previously added to this [Event].

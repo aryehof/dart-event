@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:event/event.dart';
 import 'package:test/test.dart';
 
@@ -145,6 +146,62 @@ void main() {
       _onChange();
 
       expect(changedTo, equals(2020));
+    });
+
+    test('Event broadcasts to Stream with no args', () async {
+      bool testResult;
+
+      var e = Event();
+      var sc = StreamController();
+
+      e.subscribeStream(sc.sink);
+      e.broadcast();
+
+      sc.stream.listen((e) {
+        testResult = true;
+      });
+      await sc.close();
+      expect(testResult, equals(true));
+    });
+
+    test('Event broadcasts to Stream with args', () async {
+      int testResult;
+
+      var e = Event<GenericEventArgs1<int>>();
+      var sc = StreamController<GenericEventArgs1<int>>();
+
+      e.subscribeStream(sc.sink);
+      e.broadcast(GenericEventArgs1(17, description: 'first'));
+      e.broadcast(GenericEventArgs1(36, description: 'second'));
+
+      sc.stream.listen((e) {
+        if (e.value == 36) {
+          testResult = 36;
+        }
+      });
+
+      await sc.close();
+      expect(testResult, equals(36));
+    });
+
+    test('Event broadcasts to filtered Stream with args', () async {
+      int testResult;
+
+      var e = Event<GenericEventArgs1<int>>();
+      var sc = StreamController<GenericEventArgs1<int>>();
+
+      e.subscribeStream(sc.sink);
+      e.broadcast(GenericEventArgs1(17, description: 'first'));
+      e.broadcast(GenericEventArgs1(36, description: 'second'));
+
+      sc.stream.listen((e) {
+        if (e.value == 36) {
+          testResult = 36;
+        }
+      });
+
+      await sc.close();
+      expect(testResult, equals(36));
     });
   });
 }
