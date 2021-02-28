@@ -1,5 +1,9 @@
 # Changelog - Event
 
+## Version 1.1.5  (2021-02-28)
+
+* Minor changes to README content and layout.
+
 ## Version 1.1.4  (2020-06-10)
 
 - Added a `subscribeStream` method to Event, which supports the broadcasting of Events to a Dart `Stream` [StreamSink].
