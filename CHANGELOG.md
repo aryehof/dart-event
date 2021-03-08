@@ -1,5 +1,9 @@
 # Changelog - Event
 
+## Version 2.0.1  (2021-03-08)
+
+- Fixed incorrect link to Changelog in README
+
 ## Version 2.0.0  (2021-03-08)
 
 - Null safe. (Min SDK version 2.12.0)

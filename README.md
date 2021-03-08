@@ -255,4 +255,4 @@ class ValueEventArgs extends EventArgs {
 
 [eventsubscriber]: https://pub.dev/packages/eventsubscriber
 [tracker]: https://github.com/aryehof/dart-event/issues
-[changelog]: https://pub.dev/packages/event/#-changelog-tab-
+[changelog]: https://pub.dev/packages/event/changelog
