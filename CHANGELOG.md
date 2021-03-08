@@ -1,5 +1,10 @@
 # Changelog - Event
 
+## Version 2.0.0  (2021-03-08)
+
+- Null safe. (Min SDK version 2.12.0)
+- Changes to README content and layout.
+
 ## Version 1.1.5  (2021-02-28)
 
 * Minor changes to README content and layout.
