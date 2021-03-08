@@ -6,35 +6,41 @@ This package supports the creation of lightweight custom Dart Events, that allow
 
 It is inspired by the `C#` language's implementation of `Events` and `Delegates`.
 
-&nbsp;
+---
 
-## What's New
+Contents
+* [Whats New](#whatsnew)
+* [Features and bugs](#featuresbugs)
+* [See also for Flutter](#seealso)
+* [Dependencies](#dependencies)
+* [Background](#background)
+* [Implementation Notes](#implementation-notes)
+  * [Broadcast to a Stream](#broadcasttostream)
+* [Examples](#examples)
+  * [1 - A simple Event with no argument](#example1)
+  * [2 - An Event with a custom event argument [EventArgs]](#example2)
+
+---
+
+## [What's New](#whatsnew)
 
 See the [Changelog][changelog] for details on changes in each version.
 
-## Features and bugs
+## [Features and bugs](#featuresbugs)
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
-## See also for Flutter
+## [See also for Flutter](#seealso)
 
 [EventSubscriber][eventsubscriber] - A Flutter Widget that can subscribe to an [Event] with optional arguments.
 
 This is a Flutter widget that updates (rebuilds) when an [Event] occurs.
 
-## Dependencies
+## [Dependencies](#dependencies)
 
 None. This Dart package has no non-development dependencies on other packages.
 
-&nbsp;
-
-
-Contents
-* [Background](https://github.com/aryehof/dart-event#background)
-* [Implementation Notes](https://github.com/aryehof/dart-event#implementation-notes)
-* [Examples](https://github.com/aryehof/dart-event#examples)
-
-## Background
+## [Background](#background)
 
 As developers, we understand that dividing independent functionality into separate modules (packages) is something to which we should aspire. It can be ideal to model our problem domain independently of user interface, other systems, and technical plumbing. Equally, independent pieces of infrastructure benefit from being in separate modules (packages). Doing so has the same attraction as the decomposition of functionality into separate subroutines, albeit at a larger scale. Let's divide a large problem into smaller pieces, that can be reasoned about and worked on independently, and then re-combined to represent a solution to the problem.
 
@@ -66,7 +72,7 @@ Likewise, the domain model can publish Events which the three consumers of the m
 
 Note that the three consumers of the model, as well as the model in relation to the elevator control library, remain _independent_.
 
-## Implementation Notes
+## [Implementation Notes](#implementation-notes)
 
 An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to. Broadcasting an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
 
@@ -95,7 +101,7 @@ changeEvent.broadcast(ChangeArgs(61));
 
 // TODO: show example of "Named Event Pattern".
 
-### Broadcast to a Stream
+### [Broadcast to a Stream](#broadcasttostream)
 
 Dart streams enable a sequence of events to be filtered and transformed. One can subscribe an `Event` to a stream using the `subscribeStream` method.
 The rich range of mechanisms to filter and manipulate Streams become available.
@@ -114,11 +120,34 @@ sc.stream.listen((e) => print('boom'));
 sc.close();
 ```
 
-## Examples
+## [Examples](#examples)
 
 Two examples are shown below. The first shows an Event, without an argument provided to handlers (subscribers). The second, shows an Event which does provide a custom argument to the handlers.
 
-#### Example 1: A simple Event with no argument
+#### [Example x: Basic API](#examplea)
+
+```dart
+import 'package:event/event.dart';
+
+void main() {
+  /// An incrementing counter defined below.
+  int counter = 0
+
+  var counterChanged = Event();
+
+  // Subscribe to the custom event
+  c.valueChangedEvent + (args) => print('boom');
+
+  c.increment();
+  c.reset();
+
+  // outputs...
+  // boom
+  // boom
+}
+```
+
+#### [Example 1: A simple Event with no argument](#example1)
 
 ```dart
 import 'package:event/event.dart';
@@ -165,7 +194,7 @@ class Counter {
 }
 ```
 
-#### Example 2: An Event with a custom event argument [EventArgs]
+#### [Example 2: An Event with a custom event argument [EventArgs]](#example2)
 
 ```dart
 import 'package:event/event.dart';
@@ -175,7 +204,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.valueChangedEvent + (args) => print('value changed to ${args.changedValue}');
+  c.valueChangedEvent + (args) => print('value changed to ${args?.changedValue}');
 
   c.increment();
   c.reset();
