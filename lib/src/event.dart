@@ -6,12 +6,15 @@ import 'dart:async';
 
 import 'eventargs.dart';
 
+// eventhandler cannot be null
+// args can be null
+
 /// Defines the function (callback) signature of an Event handler.
 /// It is a function that takes an argument of type [EventArgs],
 /// or one derived from it.
 ///
 /// See also [EventArgs].
-typedef EventHandler<T extends EventArgs> = void Function(T args);
+typedef EventHandler<T extends EventArgs> = void Function(T? args);
 
 /// Represents an Event as some number of handlers (subscribers) that can be
 /// notified when a condition occurs, by using the [broadcast] method.
@@ -35,7 +38,7 @@ class Event<T extends EventArgs> {
   /// The handlers (subscribers) associated with this [Event]. Instantiated
   /// lazily (on demand) to reflect that an [Event] may have no subscribers,
   /// and if so, should not incur the overhead of instantiating an empty [List].
-  List<EventHandler<T>> _handlers;
+  List<EventHandler<T>>? _handlers;
 
   /// Adds a handler (callback) that will be executed when this
   /// [Event] is raised using the [broadcast] method.
@@ -47,12 +50,9 @@ class Event<T extends EventArgs> {
   /// counter.onValueChanged.subscribe((args) => print('value changed'));
   /// ```
   void subscribe(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
     // instantiate handlers if required
     _handlers ??= [];
-    _handlers.add(handler);
+    _handlers?.add(handler);
   }
 
   /// Adds a handler (callback) that will be executed when this
@@ -67,9 +67,6 @@ class Event<T extends EventArgs> {
   /// counter.onValueChanged + (args) => print('value changed');
   /// ```
   void operator +(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
     subscribe(handler);
   }
 
@@ -80,10 +77,7 @@ class Event<T extends EventArgs> {
   ///
   /// See also the [-] shorcut version.
   bool unsubscribe(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
-    return _handlers.remove(handler);
+    return _handlers!.remove(handler);
   }
 
   /// Subscribes a Stream [StreamSink] to an Event.
@@ -108,12 +102,8 @@ class Event<T extends EventArgs> {
   ///  sc.close();`
   /// ```
   void subscribeStream(StreamSink sink) {
-    if (sink is! StreamSink) {
-      throw ArgumentError('a Sink must be specified');
-    }
-
     _handlers ??= [];
-    _handlers.add((args) => {sink.add(args)});
+    _handlers!.add((args) => {sink.add(args)});
   }
 
   /// Removes a handler previously added to this [Event].
@@ -124,15 +114,12 @@ class Event<T extends EventArgs> {
   /// Returns `true` if handler was in list, `false` otherwise.
   /// This method has no effect if the handler is not in the list.
   bool operator -(EventHandler<T> handler) {
-    if (handler is! EventHandler<T>) {
-      throw ArgumentError('a handler must be specified');
-    }
     return unsubscribe(handler);
   }
 
   /// Removes all subscribers (handlers).
   void unsubscribeAll() {
-    _handlers.clear();
+    _handlers!.clear();
     _handlers = null;
   }
 
@@ -145,11 +132,11 @@ class Event<T extends EventArgs> {
     if (_handlers == null) {
       return 0;
     } else {
-      return _handlers.length;
+      return _handlers!.length;
     }
   }
 
-  /// Broadcast this [Event] to subscribers, with an optional [EventArgs] argument.
+  /// Broadcast this [Event] to subscribers, with an optional [EventArgs] derived argument.
   ///
   /// Ignored if no handlers (subscribers).
   /// Calls each handler (callback) that was previously added to this [Event].
@@ -162,10 +149,10 @@ class Event<T extends EventArgs> {
   /// // With an argument [EventArg]
   /// onValueChanged2.broadcast(ChangedValue(3.14159));
   /// ```
-  void broadcast([T args]) {
+  void broadcast([T? args]) {
     // ignore if no handlers
     if (_handlers != null) {
-      for (var handler in _handlers) {
+      for (var handler in _handlers!) {
         handler(args);
       }
     }

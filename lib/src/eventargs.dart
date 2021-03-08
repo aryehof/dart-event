@@ -42,12 +42,10 @@ class StdEventArgs extends EventArgs {
   DateTime whenOccurred;
 
   /// An optional description or other information.
-  String description;
+  String? description;
 
   /// Creates a new [StdEventArgs], with an optional description.
-  StdEventArgs({this.description}) {
-    whenOccurred = DateTime.now();
-  }
+  StdEventArgs({this.description}) : whenOccurred = DateTime.now();
 }
 
 /// Represents an empty [EventArg] derived class. For use where no
@@ -84,7 +82,7 @@ class GenericEventArgs1<T> extends StdEventArgs {
   T value;
 
   /// Creates an [EventArg1] with one generic [value]
-  GenericEventArgs1(this.value, {String description}) : super(description: description);
+  GenericEventArgs1(this.value, {String? description}) : super(description: description);
 }
 
 /// Represents a [StdEventArgs] derived class with two (generic) values.
@@ -108,6 +106,6 @@ class GenericEventArgs2<T1, T2> extends StdEventArgs {
   T2 value2;
 
   /// Creates an [EventArg2] with two generic values: [value1] and [value2]
-  GenericEventArgs2(this.value1, this.value2, {String description})
+  GenericEventArgs2(this.value1, this.value2, {String? description})
       : super(description: description);
 }

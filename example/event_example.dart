@@ -17,7 +17,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom Event.
-  c.valueChangedEvent.subscribe((args) => print('value changed to ${args.changedValue}'));
+  c.valueChangedEvent.subscribe((args) => print('value changed to ${args?.changedValue}'));
 
   // The '+' operator is a shortcut for the subscribe method.
   // It is directly equivalent to ...
@@ -36,26 +36,26 @@ void main() {
 ///
 /// Notifies [Event] handlers (subscribers) when incremented.
 /// The notification includes some custom arguments - in this case
-/// the changed [value] (see [ValueEventArgs] below).
+/// the changed [count] (see [ValueEventArgs] below).
 class Counter {
   /// The current [Counter] value.
-  int value = 0;
+  int count = 0;
 
   /// A custom [Event] of type [ValueEventArgs]
   final valueChangedEvent = Event<ValueEventArgs>();
 
-  /// Increment the [Counter] [value] by 1.
+  /// Increment the [Counter] [count] by 1.
   void increment() {
-    value++;
+    count++;
     // notify subscribers of the change in value
-    valueChangedEvent.broadcast(ValueEventArgs(value));
+    valueChangedEvent.broadcast(ValueEventArgs(count));
   }
 
-  /// Reset the [Counter] [value] to 0.
+  /// Reset the [Counter] [count] to 0.
   void reset() {
-    value = 0;
+    count = 0;
     // notify subscribers of the change in value
-    valueChangedEvent.broadcast(ValueEventArgs(value));
+    valueChangedEvent.broadcast(ValueEventArgs(count));
   }
 }
 

@@ -37,11 +37,11 @@ void main() {
       e.subscribe(myHandler);
       expect(e.subscriberCount, equals(1));
 
-      var result = e.unsubscribe(myHandler);
-      expect(result, equals(true));
+      bool successfulUnsubscribe = e.unsubscribe(myHandler);
+      expect(successfulUnsubscribe, equals(true));
 
-      result = e.unsubscribe(myHandler);
-      expect(result, equals(false));
+      successfulUnsubscribe = e.unsubscribe(myHandler);
+      expect(successfulUnsubscribe, equals(false));
 
       expect(e.subscriberCount, equals(0));
     });
@@ -53,17 +53,17 @@ void main() {
       e.subscribe(myHandler);
       expect(e.subscriberCount, equals(1));
 
-      var result = e - myHandler;
-      expect(result, equals(true));
+      bool successfulUnsubscribe = e - myHandler;
+      expect(successfulUnsubscribe, equals(true));
 
-      result = e - myHandler;
-      expect(result, equals(false));
+      successfulUnsubscribe = e - myHandler;
+      expect(successfulUnsubscribe, equals(false));
 
       expect(e.subscriberCount, equals(0));
     });
 
     test('broadcast calls no args handler', () {
-      var changedInHandler = -1;
+      int changedInHandler = -1;
 
       var e = Event();
       e.subscribe((args) => {changedInHandler = 61});
@@ -73,45 +73,45 @@ void main() {
 
     test('broadcast calls a handler with EventArgs', () {
       // a value expected to change when event is raised
-      var changedInHandler = -1;
+      int? changedInHandler = -1;
 
       var e = Event<GenericEventArgs1<int>>();
-      e.subscribe((args) => {changedInHandler = args.value});
+      e.subscribe((args) => {changedInHandler = args?.value});
       e.broadcast(GenericEventArgs1(39));
 
       expect(changedInHandler, equals(39));
     });
 
     test('StdEventArg fields - whenOccurred and description', () {
-      DateTime eventOccurred;
-      String description;
+      DateTime? eventOccurred;
+      String? description;
 
       var e = Event<StdEventArgs>();
       e.subscribe((args) {
-        eventOccurred = args.whenOccurred;
-        description = args.description;
+        eventOccurred = args?.whenOccurred;
+        description = args?.description;
       });
       e.broadcast(StdEventArgs(description: 'test description'));
-      expect(DateTime.now().difference(eventOccurred), lessThan(Duration(milliseconds: 250)));
+      expect(DateTime.now().difference(eventOccurred!), lessThan(Duration(milliseconds: 250)));
       expect(description, equals('test description'));
     });
     test('EventArgs1', () {
-      String value;
+      String? value;
 
       var e = Event<GenericEventArgs1<String>>();
-      e.subscribe((args) => value = args.value);
+      e.subscribe((args) => value = args?.value);
       e.broadcast(GenericEventArgs1('hello'));
       expect(value, equals('hello'));
     });
 
     test('EventArgs2', () {
-      String value1;
-      int value2;
+      String? value1;
+      int? value2;
 
       var e = Event<GenericEventArgs2<String, int>>();
       e.subscribe((args) {
-        value1 = args.value1;
-        value2 = args.value2;
+        value1 = args?.value1;
+        value2 = args?.value2;
       });
       e.broadcast(GenericEventArgs2('boom', 37));
       expect(value1, equals('boom'));
@@ -140,7 +140,7 @@ void main() {
       }
 
       // 3. add a handler (where applicable) to the Event
-      changeEvent.subscribe((args) => changedTo = args.value);
+      changeEvent.subscribe((args) => changedTo = args?.value);
 
       // 4. call the wrapped on... function to raise the Event
       _onChange();
@@ -149,7 +149,7 @@ void main() {
     });
 
     test('Event broadcasts to Stream with no args', () async {
-      bool testResult;
+      bool? testResult;
 
       var e = Event();
       var sc = StreamController();
@@ -165,7 +165,7 @@ void main() {
     });
 
     test('Event broadcasts to Stream with args', () async {
-      int testResult;
+      int? testResult;
 
       var e = Event<GenericEventArgs1<int>>();
       var sc = StreamController<GenericEventArgs1<int>>();
@@ -185,7 +185,7 @@ void main() {
     });
 
     test('Event broadcasts to filtered Stream with args', () async {
-      int testResult;
+      int? testResult;
 
       var e = Event<GenericEventArgs1<int>>();
       var sc = StreamController<GenericEventArgs1<int>>();
