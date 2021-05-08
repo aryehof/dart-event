@@ -11,5 +11,6 @@ doc/api/
 # Ignore pubspec lock file
 pubspec.lock
 
-# Vscode folder
+# Dev environments
 .vscode/
+.idea/
