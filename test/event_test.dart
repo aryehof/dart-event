@@ -6,31 +6,31 @@ void main() {
   group('Event Tests', () {
     // setUp(() {});
 
-    test('Test count correct with no handlers', () {
+    test('Count is 0 for Event with no handlers', () {
       var e = Event();
       expect(e.subscriberCount, equals(0));
     });
 
-    test('Test count correct with added handlers', () {
+    test('Adding a handler using "subscribe"', () {
+      var e = Event();
+      e.subscribe((args) => {});
+      expect(e.subscriberCount, equals(1));
+    });
+
+    test('Adding a handler using "+" overload', () {
+      var e = Event();
+      e + (args) => {};
+      expect(e.subscriberCount, equals(1));
+    });
+
+    test('Adding 2 handlers using subscribe', () {
       var e = Event();
       e + (args) => print('foo');
       e + (args) => print('bar');
       expect(e.subscriberCount, equals(2));
     });
 
-    test('addHandler adds a handler', () {
-      var e = Event();
-      e.subscribe((args) => {});
-      expect(e.subscriberCount, equals(1));
-    });
-
-    test('"+" operator adds a handler', () {
-      var e = Event();
-      e + (args) => {};
-      expect(e.subscriberCount, equals(1));
-    });
-
-    test('removeHandler removes a handler', () {
+    test('Calling unsubscribe removes a handler', () {
       var e = Event();
       var myHandler = (args) => {};
 
@@ -46,7 +46,7 @@ void main() {
       expect(e.subscriberCount, equals(0));
     });
 
-    test('"-" removes a handler', () {
+    test('Using "-" overload for unsubscribe removes a handler', () {
       var e = Event();
       var myHandler = (args) => {};
 
@@ -62,16 +62,29 @@ void main() {
       expect(e.subscriberCount, equals(0));
     });
 
-    test('broadcast calls no args handler', () {
-      int changedInHandler = -1;
-
+    test('Calling unsubscribe with no handlers returns false', () {
       var e = Event();
-      e.subscribe((args) => {changedInHandler = 61});
-      e.broadcast();
-      expect(changedInHandler, equals(61));
+      var myHandler = (args) => {};
+
+      bool result = e.unsubscribe(myHandler);
+      expect(result, equals(false));
     });
 
-    test('broadcast calls a handler with EventArgs', () {
+    test('Calling unsubscribeAll with no handlers results in no exceptions', () {
+      var e = Event();
+      e.unsubscribeAll();
+    });
+
+    test('Calling broadcast successful with no args handler', () {
+      bool changedInHandler = false;
+
+      var e = Event();
+      e.subscribe((args) => {changedInHandler = true});
+      e.broadcast();
+      expect(changedInHandler, equals(true));
+    });
+
+    test('Calling broadcast with argument successful', () {
       // a value expected to change when event is raised
       int? changedInHandler = -1;
 
@@ -82,7 +95,7 @@ void main() {
       expect(changedInHandler, equals(39));
     });
 
-    test('StdEventArg fields - whenOccurred and description', () {
+    test('Using StdEventArgs fields (whenOccurred and description) correct', () {
       DateTime? eventOccurred;
       String? description;
 
@@ -95,6 +108,7 @@ void main() {
       expect(DateTime.now().difference(eventOccurred!), lessThan(Duration(milliseconds: 250)));
       expect(description, equals('test description'));
     });
+
     test('EventArgs1', () {
       String? value;
 

@@ -1,5 +1,10 @@
 # Changelog - Event
 
+## Version 2.0.2  (2021-05-08)
+
+- Fixed issue #7 https://github.com/aryehof/dart-event/issues/7
+- Updated tests
+
 ## Version 2.0.1  (2021-03-08)
 
 - Fixed incorrect link to Changelog in README

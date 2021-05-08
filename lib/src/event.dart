@@ -70,16 +70,6 @@ class Event<T extends EventArgs> {
     subscribe(handler);
   }
 
-  /// Removes a handler previously added to this [Event].
-  ///
-  /// Returns `true` if handler was in list, `false` otherwise.
-  /// This method has no effect if the handler is not in the list.
-  ///
-  /// See also the [-] shorcut version.
-  bool unsubscribe(EventHandler<T> handler) {
-    return _handlers!.remove(handler);
-  }
-
   /// Subscribes a Stream [StreamSink] to an Event.
   ///
   /// This allows a sequence of broadcast Events to
@@ -108,6 +98,17 @@ class Event<T extends EventArgs> {
 
   /// Removes a handler previously added to this [Event].
   ///
+  /// Returns `true` if handler was in list, `false` otherwise.
+  /// This method has no effect if the handler is not in the list.
+  ///
+  /// See also the [-] shorcut version.
+  bool unsubscribe(EventHandler<T> handler) {
+    if (_handlers == null) return false;
+    return _handlers!.remove(handler);
+  }
+
+  /// Removes a handler previously added to this [Event].
+  ///
   /// Uses "-" as an alternative syntax to the [unsubscribe] method
   /// to remove a handler from this [Event].
   ///
@@ -119,8 +120,10 @@ class Event<T extends EventArgs> {
 
   /// Removes all subscribers (handlers).
   void unsubscribeAll() {
-    _handlers!.clear();
-    _handlers = null;
+    if (_handlers != null) {
+      _handlers!.clear();
+      _handlers = null;
+    }
   }
 
   /// Returns the number of handlers (subscribers).
