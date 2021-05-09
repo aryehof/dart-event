@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
 import 'eventargs.dart';
-
-// eventhandler cannot be null
-// args can be null
 
 /// Defines the function (callback) signature of an Event handler.
 /// It is a function that takes an argument of type [EventArgs],
@@ -93,7 +89,7 @@ class Event<T extends EventArgs> {
   /// ```
   void subscribeStream(StreamSink sink) {
     _handlers ??= [];
-    _handlers!.add((args) => {sink.add(args)});
+    _handlers?.add((args) => {sink.add(args)});
   }
 
   /// Removes a handler previously added to this [Event].
@@ -121,7 +117,7 @@ class Event<T extends EventArgs> {
   /// Removes all subscribers (handlers).
   void unsubscribeAll() {
     if (_handlers != null) {
-      _handlers!.clear();
+      _handlers?.clear();
       _handlers = null;
     }
   }
@@ -156,7 +152,7 @@ class Event<T extends EventArgs> {
     // ignore if no handlers
     if (_handlers != null) {
       for (var handler in _handlers!) {
-        handler(args);
+        handler.call(args);
       }
     }
   }
