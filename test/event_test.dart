@@ -6,7 +6,7 @@ void main() {
   group('Event Tests', () {
     // setUp(() {});
 
-    test('Count is 0 for Event with no handlers', () {
+    test('Subscriber count is 0 for Event with no handlers', () {
       var e = Event();
       expect(e.subscriberCount, equals(0));
     });
@@ -72,7 +72,8 @@ void main() {
 
     test('Calling unsubscribeAll with no handlers results in no exceptions', () {
       var e = Event();
-      e.unsubscribeAll();
+      expect(() => e.unsubscribeAll(), returnsNormally);
+      expect(e.subscriberCount, equals(0));
     });
 
     test('Calling broadcast successful with no args handler', () {
@@ -216,6 +217,11 @@ void main() {
 
       await sc.close();
       expect(testResult, equals(36));
+    });
+
+    test('Method toString returns the Event Type name', () {
+      var e = Event();
+      expect(e.toString(), equals('Event<EventArgs>'));
     });
   });
 }
