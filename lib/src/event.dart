@@ -34,7 +34,7 @@ class Event<T extends EventArgs> {
   /// The handlers (subscribers) associated with this [Event]. Instantiated
   /// lazily (on demand) to reflect that an [Event] may have no subscribers,
   /// and if so, should not incur the overhead of instantiating an empty [List].
-  List<EventHandler<T>>? _handlers;
+  late final List<EventHandler<T>> _handlers = [];
 
   /// Adds a handler (callback) that will be executed when this
   /// [Event] is raised using the [broadcast] method.
@@ -46,9 +46,7 @@ class Event<T extends EventArgs> {
   /// counter.onValueChanged.subscribe((args) => print('value changed'));
   /// ```
   void subscribe(EventHandler<T> handler) {
-    // instantiate handlers if required
-    _handlers ??= [];
-    _handlers?.add(handler);
+    _handlers.add(handler);
   }
 
   /// Adds a handler (callback) that will be executed when this
@@ -88,8 +86,7 @@ class Event<T extends EventArgs> {
   ///  sc.close();`
   /// ```
   void subscribeStream(StreamSink sink) {
-    _handlers ??= [];
-    _handlers?.add((args) => {sink.add(args)});
+    _handlers.add((args) => {sink.add(args)});
   }
 
   /// Removes a handler previously added to this [Event].
@@ -99,8 +96,7 @@ class Event<T extends EventArgs> {
   ///
   /// See also the [-] shorcut version.
   bool unsubscribe(EventHandler<T> handler) {
-    if (_handlers == null) return false;
-    return _handlers!.remove(handler);
+    return _handlers.remove(handler);
   }
 
   /// Removes a handler previously added to this [Event].
@@ -116,10 +112,7 @@ class Event<T extends EventArgs> {
 
   /// Removes all subscribers (handlers).
   void unsubscribeAll() {
-    if (_handlers != null) {
-      _handlers?.clear();
-      _handlers = null;
-    }
+    _handlers.clear();
   }
 
   /// Returns the number of handlers (subscribers).
@@ -128,11 +121,7 @@ class Event<T extends EventArgs> {
   /// int numberOfHandlers = myEvent.subscriberCount
   /// ```
   int get subscriberCount {
-    if (_handlers == null) {
-      return 0;
-    } else {
-      return _handlers!.length;
-    }
+    return _handlers.length;
   }
 
   /// Broadcast this [Event] to subscribers, with an optional [EventArgs] derived argument.
@@ -149,11 +138,8 @@ class Event<T extends EventArgs> {
   /// onValueChanged2.broadcast(ChangedValue(3.14159));
   /// ```
   void broadcast([T? args]) {
-    // ignore if no handlers
-    if (_handlers != null) {
-      for (var handler in _handlers!) {
-        handler.call(args);
-      }
+    for (var handler in _handlers) {
+      handler.call(args);
     }
   }
 
