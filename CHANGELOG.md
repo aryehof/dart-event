@@ -2,9 +2,9 @@
 
 ## Version 2.0.3  (2021-05-09)
 
-- Make the list of handlers a non-nullable Type using the 'late' keyword.
+- Make the list of handlers a non-nullable Type that is created lazily using  the new 'late' keyword.
 
-The handler list is still created lazily. This simplifies the code substantially, because no null checks etc. are required.
+This simplifies the code substantially, because no null checks etc. are required.
 
 ## Version 2.0.2  (2021-05-08)
 
