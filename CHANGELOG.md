@@ -1,5 +1,9 @@
 # Changelog - Event
 
+## Version 2.0.5  (2021-05-10)
+
+- Fix issue #5. Support the ability to unsubscribeAll within an Event handler.
+
 ## Version 2.0.4  (2021-05-10)
 
 - `GenericEventArg1` and `GenericEventArg2` Event argument types renamed to `Value` and `Values`. Better reflects common usage. `Values` supports two values, while `Value` supports one.

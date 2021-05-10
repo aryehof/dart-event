@@ -232,5 +232,13 @@ void main() {
       var e = Event();
       expect(e.toString(), equals('Event<EventArgs>'));
     });
+
+    // see Issue #5 - Subscribe once and exception
+    test('Can Unsubscribe in handler enabling "subscribeOnce" behavior', () {
+      var e = Event();
+      e.subscribe((args) => e.unsubscribeAll());
+      e.broadcast();
+      expect(e.subscriberCount, equals(0));
+    });
   });
 }

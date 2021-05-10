@@ -138,8 +138,8 @@ class Event<T extends EventArgs> {
   /// onValueChanged2.broadcast(ChangedValue(3.14159));
   /// ```
   void broadcast([T? args]) {
-    for (var handler in _handlers) {
-      handler.call(args);
+    for (var i = 0; i < _handlers.length; i++) {
+      _handlers[i].call(args);
     }
   }
 
