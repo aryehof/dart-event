@@ -89,14 +89,14 @@ void main() {
       // a value expected to change when event is raised
       int? changedInHandler = -1;
 
-      var e = Event<GenericEventArgs1<int>>();
+      var e = Event<Value<int>>();
       e.subscribe((args) => {changedInHandler = args?.value});
-      e.broadcast(GenericEventArgs1(39));
+      e.broadcast(Value(39));
 
       expect(changedInHandler, equals(39));
     });
 
-    test('Using StdEventArgs fields (whenOccurred and description) correct', () {
+    test('Use StdEventArgs fields (whenOccurred and description) correctly', () {
       DateTime? eventOccurred;
       String? description;
 
@@ -110,25 +110,34 @@ void main() {
       expect(description, equals('test description'));
     });
 
-    test('EventArgs1', () {
+    test('Single Value as a generic Event argument', () {
       String? value;
 
-      var e = Event<GenericEventArgs1<String>>();
+      var e = Event<Value<String>>();
       e.subscribe((args) => value = args?.value);
-      e.broadcast(GenericEventArgs1('hello'));
+      e.broadcast(Value('hello'));
       expect(value, equals('hello'));
     });
 
-    test('EventArgs2', () {
+    test('Single Value as a generic argument, where value type is implicitly derived', () {
+      String? value;
+
+      var e = Event<Value>(); // Value is implicitly a string per the constructor
+      e.subscribe((args) => value = args?.value);
+      e.broadcast(Value('any string'));
+      expect(value, equals('any string'));
+    });
+
+    test('Two Values as generic Event arguments', () {
       String? value1;
       int? value2;
 
-      var e = Event<GenericEventArgs2<String, int>>();
+      var e = Event<Values<String, int>>();
       e.subscribe((args) {
         value1 = args?.value1;
         value2 = args?.value2;
       });
-      e.broadcast(GenericEventArgs2('boom', 37));
+      e.broadcast(Values('boom', 37));
       expect(value1, equals('boom'));
       expect(value2, equals(37));
     });
@@ -140,7 +149,7 @@ void main() {
       // "wrapped Event Pattern"
       // 1. declare the Event.
       //    By convention, use an 'Event' suffix for the name.
-      var changeEvent = Event<GenericEventArgs1>();
+      var changeEvent = Event<Value>();
 
       // 2. Wrap [broadcastWithContext] with an on... function.
       //    By convention use an '_on' prefix for the name.
@@ -151,7 +160,7 @@ void main() {
         // test.
         // changeEvent.broadcastWithContext(year, args);
 
-        changeEvent.broadcast(GenericEventArgs1(currentYear));
+        changeEvent.broadcast(Value(currentYear));
       }
 
       // 3. add a handler (where applicable) to the Event
@@ -182,12 +191,12 @@ void main() {
     test('Event broadcasts to Stream with args', () async {
       int? testResult;
 
-      var e = Event<GenericEventArgs1<int>>();
-      var sc = StreamController<GenericEventArgs1<int>>();
+      var e = Event<Value<int>>();
+      var sc = StreamController<Value<int>>();
 
       e.subscribeStream(sc.sink);
-      e.broadcast(GenericEventArgs1(17, description: 'first'));
-      e.broadcast(GenericEventArgs1(36, description: 'second'));
+      e.broadcast(Value(17, description: 'first'));
+      e.broadcast(Value(36, description: 'second'));
 
       sc.stream.listen((e) {
         if (e.value == 36) {
@@ -202,12 +211,12 @@ void main() {
     test('Event broadcasts to filtered Stream with args', () async {
       int? testResult;
 
-      var e = Event<GenericEventArgs1<int>>();
-      var sc = StreamController<GenericEventArgs1<int>>();
+      var e = Event<Value<int>>();
+      var sc = StreamController<Value<int>>();
 
       e.subscribeStream(sc.sink);
-      e.broadcast(GenericEventArgs1(17, description: 'first'));
-      e.broadcast(GenericEventArgs1(36, description: 'second'));
+      e.broadcast(Value(17, description: 'first'));
+      e.broadcast(Value(36, description: 'second'));
 
       sc.stream.listen((e) {
         if (e.value == 36) {

@@ -1,5 +1,21 @@
 # Changelog - Event
 
+## Version 2.0.4  (2021-05-10)
+
+- `GenericEventArg1` and `GenericEventArg2` Event argument types renamed to `Value` and `Values`. Better reflects common usage. `Values` supports two values, while `Value` supports one.
+
+```dart
+      var e = Event<Value>(); // Event will include a value as an argument
+      e.broadcast(Value(39)); // type of the Value inferred to be an int
+
+      // equivalent to 
+
+      var e = Event<Value<int>>();  // type of the Value can also be explicit
+      e.broadcast(Value(39));
+```
+
+- Updated tests.
+
 ## Version 2.0.3  (2021-05-09)
 
 - Make the list of handlers a non-nullable Type that is created lazily using  the new 'late' keyword.
@@ -9,11 +25,11 @@ This simplifies the code substantially, because no null checks etc. are required
 ## Version 2.0.2  (2021-05-08)
 
 - Fixed issue #7 https://github.com/aryehof/dart-event/issues/7
-- Updated tests
+- Updated tests.
 
 ## Version 2.0.1  (2021-03-08)
 
-- Fixed incorrect link to Changelog in README
+- Fixed incorrect link to Changelog in README.
 
 ## Version 2.0.0  (2021-03-08)
 

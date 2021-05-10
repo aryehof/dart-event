@@ -11,7 +11,7 @@ import 'package:event/event.dart';
 /// class, if you want to provide subscribers with some
 /// data relating to the [Event].  Alternatively, use one
 /// of the supplied [EventArgs] derived classes: [StdEventArgs],
-/// [GenericEventArgs1] or [GenericEventArgs2].
+/// [Value] or [Values].
 ///
 /// ```dart
 /// // example
@@ -22,7 +22,7 @@ import 'package:event/event.dart';
 /// ```
 abstract class EventArgs {}
 
-/// An [EventArgs] extended class that includes the date and
+/// An [EventArgs] derived class that includes the date and
 /// time the [Event] was broadcast and an
 /// optional description.
 ///
@@ -42,10 +42,59 @@ class StdEventArgs extends EventArgs {
   DateTime whenOccurred;
 
   /// An optional description or other information.
-  String? description;
+  String description;
 
   /// Creates a new [StdEventArgs], with an optional description.
-  StdEventArgs({this.description}) : whenOccurred = DateTime.now();
+  StdEventArgs({this.description = ''}) : whenOccurred = DateTime.now();
+}
+
+/// Represents a [StdEventArgs] derived class with one (generic) value.
+///
+/// For use as a quick alternative to defining your own custom EventArgs
+/// class. Provides a [value] field that contains the value supplied on
+/// creation.
+///
+/// See also [Values] which supports 2 (generic) values.
+///
+/// ```dart
+/// // example declaration with an inferred type
+/// var e = Event<GenericEventArgs1>();
+/// // example declaration with an declared type
+/// var e = Event<GenericEventArgs1<String>>();
+/// e.subscribe((args) => print(args.value));
+/// e.broadcast(GenericEventArgs1('hello'));
+/// // outputs: hello
+///```
+class Value<T> extends StdEventArgs {
+  /// A generic value.
+  T value;
+
+  /// Creates a [Value] representing one generic [value]
+  Value(this.value, {String description = ''}) : super(description: description);
+}
+
+/// Represents a [StdEventArgs] derived class with two (generic) values.
+///
+/// For use as a quick alternative to defining your own custom EventArgs
+/// class. Provides [value1] and [value2] fields containing the values
+/// supplied on creation.
+///
+/// See also [Value] which supports 1 (generic) value.
+///
+/// ```dart
+/// // example
+/// var e = Event<EventArgs2<String, int>>();
+/// e.subscribe((args) => print('${args.value1} : ${args.value2}'));
+/// e.broadcast(EventArgs2('boom', 37));
+/// // outputs: boom : 37
+///```
+class Values<T1, T2> extends StdEventArgs {
+  /// A generic value.
+  T1 value1;
+  T2 value2;
+
+  /// Creates an [Values] representing two generic values: [value1] and [value2]
+  Values(this.value1, this.value2, {String description = ''}) : super(description: description);
 }
 
 /// Represents an empty [EventArg] derived class. For use where no
@@ -59,53 +108,3 @@ class StdEventArgs extends EventArgs {
 /// The difference is the first above makes it more explicit to a code
 /// reader that there are no EventArgs.
 class EmptyEventArgs extends EventArgs {}
-
-/// Represents a [StdEventArgs] derived class with one (generic) value.
-///
-/// For use as a quick alternative to defining your own custom EventArgs
-/// class. Provides a [value] field that contains the value supplied on
-/// creation.
-///
-/// See also [GenericEventArgs2] which supports 2 (generic) values.
-///
-/// ```dart
-/// // example declaration with an inferred type
-/// var e = Event<GenericEventArgs1>();
-/// // example declaration with an declared type
-/// var e = Event<GenericEventArgs1<String>>();
-/// e.subscribe((args) => print(args.value));
-/// e.broadcast(GenericEventArgs1('hello'));
-/// // outputs: hello
-///```
-class GenericEventArgs1<T> extends StdEventArgs {
-  /// A generic value.
-  T value;
-
-  /// Creates an [EventArg1] with one generic [value]
-  GenericEventArgs1(this.value, {String? description}) : super(description: description);
-}
-
-/// Represents a [StdEventArgs] derived class with two (generic) values.
-///
-/// For use as a quick alternative to defining your own custom EventArgs
-/// class. Provides [value1] and [value2] fields containing the values
-/// supplied on creation.
-///
-/// See also [GenericEventArgs1] which supports 1 (generic) value.
-///
-/// ```dart
-/// // example
-/// var e = Event<EventArgs2<String, int>>();
-/// e.subscribe((args) => print('${args.value1} : ${args.value2}'));
-/// e.broadcast(EventArgs2('boom', 37));
-/// // outputs: boom : 37
-///```
-class GenericEventArgs2<T1, T2> extends StdEventArgs {
-  /// A generic value.
-  T1 value1;
-  T2 value2;
-
-  /// Creates an [EventArg2] with two generic values: [value1] and [value2]
-  GenericEventArgs2(this.value1, this.value2, {String? description})
-      : super(description: description);
-}
