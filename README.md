@@ -26,10 +26,6 @@ Contents
 ## Usage
 
 ``` dart
-// pubspec.yaml
-dependencies:
-  event: ^2.0.5
-
 // dart code file
 import 'package:event/event.dart';
 ```
@@ -272,10 +268,12 @@ void main() {
   c.valueChangedEvent + (args) => print('value changed to ${args?.value}');
 
   c.increment();
+  c.increment();
   c.reset();
 
   // outputs...
   // 1
+  // 2
   // 0
 }
 
