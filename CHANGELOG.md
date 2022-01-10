@@ -1,5 +1,19 @@
 # Changelog - Event
 
+## Version 2.1.0  (2022-01-10)
+
+- Improved README
+
+** Breaking Changes **
+- `StdEventArgs` renamed to `WhenWhy` to better indicate what the arguments represent.
+
+```dart
+      var e = Event<WhenWhy>();
+      e.broadcast(WhenWhy(description: 'some info'));  
+```
+
+- EventArgs `Value` and `Values` now derive from `EventArgs` rather than WhenWhy (formerly StdEventArgs).
+
 ## Version 2.0.5  (2021-05-10)
 
 - Fix issue #5. Support the ability to unsubscribeAll within an Event handler.

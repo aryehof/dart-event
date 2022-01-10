@@ -8,9 +8,6 @@ build/
 # Directory created by dartdoc
 doc/api/
 
-# Ignore pubspec lock file
-pubspec.lock
-
 # Dev environments
 .vscode/
 .idea/

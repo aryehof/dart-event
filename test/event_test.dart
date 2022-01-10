@@ -32,7 +32,7 @@ void main() {
 
     test('Calling unsubscribe removes a handler', () {
       var e = Event();
-      var myHandler = (args) => {};
+      myHandler(args) {} // local function declaration
 
       e.subscribe(myHandler);
       expect(e.subscriberCount, equals(1));
@@ -48,7 +48,7 @@ void main() {
 
     test('Using "-" overload for unsubscribe removes a handler', () {
       var e = Event();
-      var myHandler = (args) => {};
+      myHandler(args) {} // local function declaration
 
       e.subscribe(myHandler);
       expect(e.subscriberCount, equals(1));
@@ -64,7 +64,7 @@ void main() {
 
     test('Calling unsubscribe with no handlers returns false', () {
       var e = Event();
-      var myHandler = (args) => {};
+      myHandler(args) {} // local function declaration
 
       bool result = e.unsubscribe(myHandler);
       expect(result, equals(false));
@@ -96,16 +96,16 @@ void main() {
       expect(changedInHandler, equals(39));
     });
 
-    test('Use StdEventArgs fields (whenOccurred and description) correctly', () {
+    test('Use WhenWhy EventArg fields (whenOccurred and description) correctly', () {
       DateTime? eventOccurred;
       String? description;
 
-      var e = Event<StdEventArgs>();
+      var e = Event<WhenWhy>();
       e.subscribe((args) {
         eventOccurred = args?.whenOccurred;
         description = args?.description;
       });
-      e.broadcast(StdEventArgs(description: 'test description'));
+      e.broadcast(WhenWhy(description: 'test description'));
       expect(DateTime.now().difference(eventOccurred!), lessThan(Duration(milliseconds: 250)));
       expect(description, equals('test description'));
     });
@@ -119,7 +119,7 @@ void main() {
       expect(value, equals('hello'));
     });
 
-    test('Single Value as a generic argument, where value type is implicitly derived', () {
+    test('Single Value as a generic argument, where value type is dynamic', () {
       String? value;
 
       var e = Event<Value>(); // Value is implicitly a string per the constructor
@@ -142,9 +142,23 @@ void main() {
       expect(value2, equals(37));
     });
 
+    test('Two Values as generic Event arguments, where value types are dynamic', () {
+      String? value1;
+      int? value2;
+
+      var e = Event<Values>();
+      e.subscribe((args) {
+        value1 = args?.value1;
+        value2 = args?.value2;
+      });
+      e.broadcast(Values('boom', 37));
+      expect(value1, equals('boom'));
+      expect(value2, equals(37));
+    });
+
     test('wrapped Event pattern', () {
-      var currentYear = 2020;
-      var changedTo;
+      int currentYear = 2022;
+      int? changedByEvent;
 
       // "wrapped Event Pattern"
       // 1. declare the Event.
@@ -164,12 +178,12 @@ void main() {
       }
 
       // 3. add a handler (where applicable) to the Event
-      changeEvent.subscribe((args) => changedTo = args?.value);
+      changeEvent.subscribe((args) => changedByEvent = args?.value);
 
       // 4. call the wrapped on... function to raise the Event
       _onChange();
 
-      expect(changedTo, equals(2020));
+      expect(changedByEvent, equals(2022));
     });
 
     test('Event broadcasts to Stream with no args', () async {
@@ -189,43 +203,23 @@ void main() {
     });
 
     test('Event broadcasts to Stream with args', () async {
-      int? testResult;
+      bool? hasPassed;
 
       var e = Event<Value<int>>();
       var sc = StreamController<Value<int>>();
 
       e.subscribeStream(sc.sink);
-      e.broadcast(Value(17, description: 'first'));
-      e.broadcast(Value(36, description: 'second'));
+      e.broadcast(Value(17));
+      e.broadcast(Value(36));
 
       sc.stream.listen((e) {
         if (e.value == 36) {
-          testResult = 36;
+          hasPassed = true;
         }
       });
 
       await sc.close();
-      expect(testResult, equals(36));
-    });
-
-    test('Event broadcasts to filtered Stream with args', () async {
-      int? testResult;
-
-      var e = Event<Value<int>>();
-      var sc = StreamController<Value<int>>();
-
-      e.subscribeStream(sc.sink);
-      e.broadcast(Value(17, description: 'first'));
-      e.broadcast(Value(36, description: 'second'));
-
-      sc.stream.listen((e) {
-        if (e.value == 36) {
-          testResult = 36;
-        }
-      });
-
-      await sc.close();
-      expect(testResult, equals(36));
+      expect(hasPassed, equals(true));
     });
 
     test('Method toString returns the Event Type name', () {

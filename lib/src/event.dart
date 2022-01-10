@@ -28,7 +28,7 @@ typedef EventHandler<T extends EventArgs> = void Function(T? args);
 /// // An example of an [Event] expecting an argument (see [EventArgs]).
 /// final onValueChanged = Event<ChangedValue>();
 /// counter.onValueChanged + (args) => print(args.changedValue); // add a handler
-/// onValueChanged.broadcast(ChangedValue(value)); // broadcast the [Event] to subscribers
+/// onValueChanged.broadcast(ChangedValue(37)); // broadcast the [Event] to subscribers
 /// ```
 class Event<T extends EventArgs> {
   /// The handlers (subscribers) associated with this [Event]. Instantiated
@@ -83,7 +83,7 @@ class Event<T extends EventArgs> {
   ///  e.broadcast();
   ///
   ///  sc.stream.listen((e) => print('boom'));
-  ///  sc.close();`
+  ///  sc.close();
   /// ```
   void subscribeStream(StreamSink sink) {
     _handlers.add((args) => {sink.add(args)});
