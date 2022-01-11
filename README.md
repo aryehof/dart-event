@@ -6,6 +6,8 @@ This package supports the creation of lightweight custom Dart Events, that allow
 
 It is inspired by the `C#` language's implementation of `Events` and `Delegates`.
 
+> For `Flutter`, see also [EventSubscriber][eventsubscriber] - a Flutter Widget that can subscribe to an `Event`, and which selectively _rebuilds_ when an `Event` occurs.
+
 ---
 
 Contents
@@ -14,7 +16,6 @@ Contents
   * Broadcast to a Stream
 * Whats New
 * Features and bugs
-* See also for Flutter
 * Dependencies
 * What's it For?
 * Examples
@@ -43,9 +44,9 @@ Elsewhere, _`subscribe`_ something interested in the Event, with a _function_ to
 myEvent.subscribe((args) => print('myEvent occured'));
 ```
 
-> An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to. Broadcasting an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
+An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to. Broadcasting an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
 
-One can use the `+` or `-` operators to as alternatives to using the `subscribe` or `unsubscribe` keywords.
+> Note: you can use the `+` or `-` operators as alternatives to using the `subscribe` or `unsubscribe` keywords.
 
 ### Arguments
 
@@ -54,19 +55,22 @@ An Event when `broadcast` can provide custom data to subscribers.
 One does so, by extending the EventArgs class and providing an instance of it to the `broadcast` Event method.
 
 ```dart
-// A custom 'argument' class
+// An example custom 'argument' class
 class Wind extends EventArgs {
   String direction;
   int strength
   Wind(this.direction, this.strength);
 }
 
-var weatherEvent = Event<Wind>();
-weatherEvent.broadcast(Wind('ENE', 27));
+// Example in use
+var windChanged = Event<Wind>();
+windChanged.broadcast(Wind('ENE', 27));
 
 // Wind's direction and strength, is passed to all subscribers
 
-weatherEvent.subscribe((args) => print('${args.direction' ${args.strength}));
+windChanged + (args) => print('${args.direction}:${args.strength}');
+// uses + operator alternative notation to '.subscribe'
+// prints ENE:27
 ```
 
 ### Helper Argument Classes
@@ -91,7 +95,8 @@ Consider the following examples of them in use:-
 // value (explicit)
 var myValueEvent = Event<Value<int>>();
 myValueEvent.broadcast(Value(27)));
-myValueEvent.subscribe((args) => {print('${args.value')}; // prints 27
+myValueEvent.subscribe((args) => {print('${args.value}'}); 
+// prints 27
 ```
 
 Note that in the Value type can be of type `dynamic` and does not therefore need to be explicitly stated. This means that the first line of the above could instead be written as:-
@@ -125,7 +130,7 @@ var e = Event<WhenWhy>();
 e.broadcast(WhenWhy(description: 'testing')); // description optional
 e.subscribe((args) {
   print('${args.whenOccured}:${args?.description}'));
-});
+}); // prints <timestamp>:testing
 ```
 
 ### Broadcast to a Stream
@@ -144,7 +149,7 @@ e.subscribeStream(sc.sink);
 e.broadcast();
 
 sc.stream.listen((e) => print('boom'));
-sc.close();
+sc.close();   // remember to close
 ```
 
 ## What's New
@@ -153,13 +158,7 @@ See the [Changelog][changelog] for details on changes in each version.
 
 ## Requesting Features and Reporting Bugs
 
-Please file feature requests and bugs at the [issue tracker][tracker].
-
-## See also for Flutter
-
-[EventSubscriber][eventsubscriber] - A Flutter Widget that can subscribe to an `Event` with optional arguments.
-
-This is a Flutter widget that _rebuilds_ when an `Event` occurs.
+Please add feature requests and report bugs at the [issue tracker][tracker].
 
 ## Dependencies
 
@@ -167,7 +166,9 @@ None. This Dart package has no non-development dependencies on other packages.
 
 ## What's it For?
 
-As developers, we understand that dividing independent functionality into separate modules (packages) is something to which we should aspire. It can be ideal to model our problem domain independently of user interface, other systems, and technical plumbing. Equally, independent pieces of infrastructure benefit from being in separate modules (packages). Doing so has the same attraction as the decomposition of functionality into separate subroutines, albeit at a larger scale. Let's divide a large problem into smaller pieces, that can be reasoned about and worked on independently, and then re-combined to represent a solution to the problem.
+As developers, we understand that dividing independent functionality into separate modules (packages) is something to which we should aspire. It can be ideal to model our problem domain independently of user interface, other systems, and technical plumbing.
+
+Equally, independent pieces of infrastructure benefit from being in separate modules (packages). Doing so has the same attraction as the decomposition of functionality into separate subroutines, albeit at a larger scale. Let's divide a large problem into smaller pieces, that can be reasoned about and worked on independently, and then re-combined to represent a solution to the problem.
 
 > To make something _independent_, it should should know nothing of the things that might depend on it.
 
@@ -204,7 +205,7 @@ Note that the three consumers of the model, as well as the model in relation to 
 
 ## Examples
 
-Two examples are shown below. The first shows a Counter example where incrementing the counter is broadcast without any argument provided to handlers (subscribers). The second, shows the same but with the incremented Counter value being provided as a custom argument to subscribers.
+Two examples are shown below. The first shows a Counter example where incrementing the counter is broadcast without any argument provided to handlers (subscribers). The second shows the same, but with the incremented Counter value being provided as a custom argument to subscribers.
 
 #### Example 1: A simple increment Event with no argument
 
@@ -212,11 +213,11 @@ Two examples are shown below. The first shows a Counter example where incrementi
 import 'package:event/event.dart';
 
 void main() {
-  /// An incrementing counter defined below.
+  /// The counter class is defined further below.
   var c = Counter();
 
   // Subscribe to the custom event
-  c.valueChangedEvent.subscribe((args) => print(c.value));
+  c.counterIncremented.subscribe((args) => print(c.value));
 
   c.increment();
   c.increment();
@@ -237,20 +238,18 @@ class Counter {
   int value = 0;
 
   /// A custom [Event]
-  final valueChangedEvent = Event();
+  final counterIncremented = Event();
 
   /// Increment the [Counter] [value] by 1.
   void increment() {
     value++;
-    // Broadcast the change
-    valueChangedEvent.broadcast();
+    counterIncremented.broadcast(); // Broadcast the change
   }
 
-  /// Reset the [Counter] [value] to 0.
+  /// Reset the [Counter] value to 0.
   void reset() {
     value = 0;
-    // Broadcast the change
-    valueChangedEvent.broadcast();
+    counterIncremented.broadcast(); // Broadcast the change
   }
 }
 ```
@@ -265,44 +264,43 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.valueChangedEvent + (args) => print('value changed to ${args?.value}');
+  c.counterIncremented + (args) => print('now ${args?.latestValue}');
 
   c.increment();
   c.increment();
   c.reset();
 
   // outputs...
-  // 1
-  // 2
-  // 0
+  // now 1
+  // now 2
+  // now 0
 }
 
 //-----------------
 
 /// Represents a number counter that can be incremented.
 /// Notifies [Event] handlers (subscribers) when incremented.
-/// The notification includes the changed [lastValue]
-/// See [Incremented].
+/// The broadcast notification includes the changed [lastValue] as an argument
+/// See the [Incremented] class that follows.
 class Counter {
-  /// The current [Counter] value.
-  int value = 0;
+  /// The current [Counter] count.
+  int count = 0;
 
   /// A custom [Event] with argument [Incremented]
   /// See [Incremented] class below.
-  final valueChangedEvent = Event<Incremented>();
+  final counterIncremented = Event<Incremented>();
 
-  /// Increment the [Counter] [value] by 1.
+  /// Increment the [Counter] [count] by 1.
   void increment() {
-    value++;
-    // Broadcast including the incremented value
-    valueChangedEvent.broadcast(Incremented(value));
+    count++;
+    counterIncremented.broadcast(Incremented(count)); // Broadcast including the incremented value
+
   }
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
     value = 0;
-    // Broadcast the reset value
-    valueChangedEvent.broadcast(Incremented(value));
+    counterIncremented.broadcast(Incremented(count)); // Broadcast the reset value
   }
 }
 
@@ -311,10 +309,14 @@ class Counter {
 /// Represents the arguments provided to handlers
 /// when an [Event] occurs.
 class Incremented extends EventArgs {
-  int lastValue;
-  Incremented(this.lastValue);
+  int latestValue;
+  Incremented(this.latestValue);
 }
 ```
+
+Note: the example above uses a custom `EventArgs` class `Incremented` representing an `int` counter value. One could have instead used the provided `Value<T>` argument helper instead.
+
+.END.
 
 [eventsubscriber]: https://pub.dev/packages/eventsubscriber
 [tracker]: https://github.com/aryehof/dart-event/issues

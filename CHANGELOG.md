@@ -1,6 +1,6 @@
 # Changelog - Event
 
-## Version 2.1.1  (2022-01-10)
+## Version 2.1.2  (2022-01-11)
 
 - Small README changes
 
