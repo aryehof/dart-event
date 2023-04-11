@@ -94,6 +94,10 @@ class Event<T extends EventArgs> {
   /// Returns `true` if handler was in list, `false` otherwise.
   /// This method has no effect if the handler is not in the list.
   ///
+  /// Important: There is no way to unsubscribe anonymous handlers
+  /// (other than with [unsubscribeAll]) as there is no way to
+  /// identify the handler your seeking to unsubscribe.
+  ///
   /// See also the [-] shorcut version.
   bool unsubscribe(EventHandler<T> handler) {
     return _handlers.remove(handler);
@@ -103,6 +107,10 @@ class Event<T extends EventArgs> {
   ///
   /// Uses "-" as an alternative syntax to the [unsubscribe] method
   /// to remove a handler from this [Event].
+  ///
+  /// Important: There is no way to unsubscribe anonymous handlers
+  /// (other than with [unsubscribeAll] as there is no way to
+  /// identify the handler your seeking to unsubscribe.
   ///
   /// Returns `true` if handler was in list, `false` otherwise.
   /// This method has no effect if the handler is not in the list.
