@@ -176,7 +176,7 @@ Equally, independent pieces of infrastructure benefit from being in separate mod
 
 Consider for example, that an independent model of the operation of a single elevator needs know nothing of the user interfaces (UI) or system interfaces (SI) dependent on it. There might be a diagnostics UI written in `Flutter`, a console (CUI) interface, as well as as a module that only exposes a programmatic interface (API) that external programs might consume to control the elevator.
 
-![](https://www.dropbox.com/s/wt1v75g5s5wwli1/event-example-small.jpg?raw=true)
+![](https://drive.google.com/uc?export=view&id=1kKIBEYcPkZVEzZmCEb_RX_RnlbfXMw92)
 
 There might be other 'consumers' of the domain model, but the model need not care as it knows nothing of them.
 
