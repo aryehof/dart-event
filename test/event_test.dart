@@ -1,32 +1,34 @@
 import 'dart:async';
 import 'package:event/event.dart';
+import 'package:event/src/errors.dart';
 import 'package:test/test.dart';
+
+/// An example derived EventArgs class for use in tests
+class MyCustomEventArgs extends EventArgs {}
 
 void main() {
   group('Event Tests', () {
     // setUp(() {});
 
-    test('Subscriber count is 0 for Event with no handlers', () {
+    test('Subscriber count is 0 for an Event with no subscribers', () {
       var e = Event();
-      expect(e.subscriberCount, equals(0));
+      // no subscriber
+
+      expect(e.subscriberCount, isZero);
     });
 
-    test('Adding a handler using "subscribe"', () {
+    test('Subscriber count is 1 on adding a single subscriber', () {
       var e = Event();
       e.subscribe((args) => {});
+
       expect(e.subscriberCount, equals(1));
     });
 
-    test('Adding a handler using "+" overload', () {
+    test('Subscriber count is 2 on adding two subscribers', () {
       var e = Event();
-      e + (args) => {};
-      expect(e.subscriberCount, equals(1));
-    });
+      e.subscribe((args) => print('foo'));
+      e.subscribe((args) => print('bar'));
 
-    test('Adding 2 handlers using subscribe', () {
-      var e = Event();
-      e + (args) => print('foo');
-      e + (args) => print('bar');
       expect(e.subscriberCount, equals(2));
     });
 
@@ -38,28 +40,12 @@ void main() {
       expect(e.subscriberCount, equals(1));
 
       bool successfulUnsubscribe = e.unsubscribe(myHandler);
-      expect(successfulUnsubscribe, equals(true));
+      expect(successfulUnsubscribe, isTrue);
 
       successfulUnsubscribe = e.unsubscribe(myHandler);
-      expect(successfulUnsubscribe, equals(false));
+      expect(successfulUnsubscribe, isFalse);
 
-      expect(e.subscriberCount, equals(0));
-    });
-
-    test('Using "-" overload for unsubscribe removes a handler', () {
-      var e = Event();
-      myHandler(args) {} // local function declaration
-
-      e.subscribe(myHandler);
-      expect(e.subscriberCount, equals(1));
-
-      bool successfulUnsubscribe = e - myHandler;
-      expect(successfulUnsubscribe, equals(true));
-
-      successfulUnsubscribe = e - myHandler;
-      expect(successfulUnsubscribe, equals(false));
-
-      expect(e.subscriberCount, equals(0));
+      expect(e.subscriberCount, isZero);
     });
 
     test('Calling unsubscribe with no handlers returns false', () {
@@ -73,16 +59,24 @@ void main() {
     test('Calling unsubscribeAll with no handlers results in no exceptions', () {
       var e = Event();
       expect(() => e.unsubscribeAll(), returnsNormally);
-      expect(e.subscriberCount, equals(0));
+      expect(e.subscriberCount, isZero);
     });
 
-    test('Calling broadcast is successful with no args handler', () {
+    test('Calling broadcast with no generic type is successful', () {
       bool changedInHandler = false;
 
       var e = Event();
       e.subscribe((args) => changedInHandler = true);
       e.broadcast();
-      expect(changedInHandler, equals(true));
+      expect(changedInHandler, isTrue);
+    });
+
+    test('Calling broadcast with explicit EventArgs succeeds', () {
+      var e = Event<EventArgs>();
+      e.subscribe((args) => {});
+      var hasSubscriber = e.broadcast(EventArgs());
+
+      expect(hasSubscriber, isTrue);
     });
 
     test('Calling broadcast with typed Value successful', () {
@@ -96,7 +90,7 @@ void main() {
       expect(changedInHandler, equals(39));
     });
 
-    test('Calling broadcast with untyped Value is successful', () {
+    test('Calling broadcast with dynamic Value is successful', () {
       // a value expected to change when event is raised
       int changedInHandler = -1;
 
@@ -307,6 +301,20 @@ void main() {
       var e = Event<Value>();
       e.subscribe((args) => print("Subscribed"));
       expect(() => e.broadcast(), throwsA(TypeMatcher<ArgsError>()));
+    });
+
+    test('Event type via genericType is reported correctly', () {
+      var e = Event();
+      expect(e.genericType, equals(EventArgs));
+
+      e = Event<Value>();
+      expect(e.genericType, equals(Value<dynamic>));
+
+      e = Event<Value<int>>();
+      expect(e.genericType, equals(Value<int>));
+
+      e = Event<MyCustomEventArgs>();
+      expect(e.genericType, equals(MyCustomEventArgs));
     });
   });
 

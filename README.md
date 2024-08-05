@@ -2,7 +2,7 @@
 
 [![Pub Package](https://img.shields.io/pub/v/event.svg?style=flat-square)](https://pub.dev/packages/event)
 
-This package supports the creation of lightweight custom Dart Events, that allow interested subscribers to be notified that something has happened. Provides a notification mechanism across independent packages/layers/modules.
+This package supports the creation of lightweight custom Dart Events, that allow interested subscribers to be notified that something has happened. It provides a notification mechanism across independent packages/layers/modules.
 
 It is inspired by the `C#` language's implementation of `Events` and `Delegates`.
 
@@ -14,7 +14,7 @@ Contents
 * Usage
   * Arguments
   * Broadcast to a Stream
-* Whats New
+* What's New
 * Features and bugs
 * Dependencies
 * What's it For?
@@ -26,33 +26,87 @@ Contents
 
 ## Usage
 
-``` dart
+```dart
 // dart code file
 import 'package:event/event.dart';
 ```
 
-Declare an `Event` and _`broadcast`_ it when the Event occurs.
+Declare an `Event`. Subscribe a handler function (subscriber) to run when the Event occurs. Indicate that the `Event` has occured by calling the `broadcast` method.
 
 ```dart
-var myEvent = Event();
-myEvent.broadcast();
-```
-
-Elsewhere, _`subscribe`_ something interested in the Event, with a _function_ to execute when the Event occurs, i.e. when it is `broadcast`.
-
-``` dart
-myEvent.subscribe((args) => print('myEvent occured'));
+var e = Event();
+e.subscribe((args) => "event occurred"));
+e.broadcast();
 ```
 
 An Event is lightweight. It maintains a list of subscribers, but that list is only instantiated the first time it is subscribed to. Broadcasting an Event does nothing if there are no subscribers. With no overhead, or impact on performance, feel free to declare and publish large numbers of Events.
 
-> Note: you can use the `+` or `-` operators as alternatives to using the `subscribe` or `unsubscribe` keywords.
 
 ### Arguments
 
-An Event when `broadcast` can provide custom data to subscribers.
+> IMPORTANT: In the common case, one will typically not pass custom data (arguments) representing what has changed to subscribers. Instead, subscriber code will query the state of the object containing the Event to determine changed values.
+> 
+> In other words, consider the MVC pattern. When the model changes, interested parties are notified. They then query the model if necessary to determine changed values.
+> 
+> See the Counter class in the example folder. Rather than pass the new counter value to the subscriber, the subscriber gets the current value from the Counter class.
 
-One does so, by extending the EventArgs class and providing an instance of it to the `broadcast` Event method.
+Arguments that can be provided to a subscriber must be either the `EventArgs` class or a derived custom type.
+
+> Note: Two helper derived classes (Value and Values) are included. See the `Helper Argument Classes` section below for further information.
+
+
+Specify the argument type as a generic type on an Event. Provide an instance of this generic type as an argument to the `broadcast` method. Instance properties are then available in subscribed code.
+
+```dart
+  var e = Event<Value<double>>();
+  // Value is a class derived from EventArgs
+
+  e.broadcast(Value(3.14159));
+  // provide an instance of the Event generic type
+
+  e.subscribe((args) => print(args.value));
+  // value is a property of the Value class
+  
+  // outputs 3.14159 to the console
+```
+
+#### EventArgs as Default
+
+If no generic type is specified, then under the hood the Event will be of generic type `EventArgs`. Thus, the following two Event declations are equal ...
+
+```dart
+  var e = Event();
+    // is equivalent to...
+  var e = Event<EventArgs>();
+```
+
+Likewise, an instance of EventArgs will be automatically provided even if not specified as an argument to `broadcast`. The following two `broadcast` calls are equivalent...
+
+```dart
+  // var e = Event();
+
+  e.broadcast();
+    // equivalent to...
+  e.broadcast(EventArgs());
+```
+
+#### EventArgs Properties
+
+EventArgs (and derived types) has two properties that can be accessed by a subscriber:- `eventName` and `whenOccured`.
+
+By default, the `eventName` is a blank string. To specify it, provide the name when creating an Event.
+
+```dart
+  var e = Event("MyEvent");
+  // equivalent to Event<EventArgs>("MyEvent");
+
+  e.subscribe((args) => print(args.eventName));
+  // outputs "MyEvent" to the console
+```
+
+An eventName might be useful if a client supported the
+
+#### Simplified Custom EventArgs Example
 
 ```dart
 // An example custom 'argument' class
@@ -68,24 +122,22 @@ windChanged.broadcast(Wind('ENE', 27));
 
 // Wind's direction and strength, is passed to all subscribers
 
-windChanged + (args) => print('${args.direction}:${args.strength}');
+windChanged.subscribe((args) => print('${args.direction}:${args.strength}'));
 // uses + operator alternative notation to '.subscribe'
 // prints ENE:27
 ```
 
 ### Helper Argument Classes
 
-Three prebuilt helper `EventArgs` based classes are included to cover the common cases of wanting to provide subscribers with:-
+Two prebuilt helper `EventArgs` derived classes are included to cover the common cases of wanting to provide subscribers with:-
 
   1. A single value
   2. Any two values
-  3. The date/time the event occurred, and an optional reason/description.
 
 Providing these, means that for these common cases you do not need to create your own custom EventArgs derived argument classes. These three  classes are respectively:-
 
   1. `Value<T>`, providing a `value` property
   2. `Values<T1, T2>`, providing `value1` and `value2` properties
-  3. `WhenWhy`, offering `whenOccured` and optional `description` properties
 
 Consider the following examples of them in use:-
 
@@ -123,15 +175,7 @@ As with `Value`, one could omit the Values types and have them be of type dynami
 var weatherEvent = Event<Values>(); // no <String, int>
 ```
 
-#### ==WhenWhy==
 
-``` dart
-var e = Event<WhenWhy>();
-e.broadcast(WhenWhy(description: 'testing')); // description optional
-e.subscribe((args) {
-  print('${args.whenOccured}:${args?.description}'));
-}); // prints <timestamp>:testing
-```
 
 ### Broadcast to a Stream
 
@@ -264,7 +308,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.counterIncremented + (args) => print('now ${args?.latestValue}');
+  c.counterIncremented.subscribe((args) => print('now ${args?.latestValue}'));
 
   c.increment();
   c.increment();

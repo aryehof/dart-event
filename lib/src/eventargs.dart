@@ -13,25 +13,6 @@ import 'event.dart';
 /// derived class, to provide subscribers with
 /// some specific data relating to an [Event].
 ///
-/// Note: An [EventArgs] instance is created even when not explicitly
-/// specified as an argument to the [broadcast] method.
-///
-/// ```dart
-/// // example ...
-/// var e = Event();   // (#1)
-/// e.subscribe((args) => print(args.whenOccurred);
-/// e.broadcast();  // (#2)
-///
-/// // prints the date/time the Event e is broadcast.
-/// // (#1) equivalent to Event<EventArgs>()
-/// // (#2) same as e.broadcast(EventArgs());
-/// ```
-/// As a shortcut to creating your own custom derived class, you can
-/// use one of the two provided derived classes:- [Value]
-/// and [Values]. These classes let you provide one or two typed values
-/// to your subscribers. See the descriptions of these two
-/// classes below.
-///
 /// ```dart
 /// // example custom arguments
 /// class MyValue extends EventArgs {
@@ -45,27 +26,36 @@ import 'event.dart';
 /// // prints 99
 /// }
 /// ```
+///
+/// Note: An [EventArgs] instance is [broadcast] even when not explicitly
+/// specified as an argument to the [broadcast] method. This means that
+/// [eventName] and [whenOccurred] are always available.
+///
+/// ```dart
+/// // example ...
+/// var e = Event();   // (#1)
+/// e.subscribe((args) => print(args.whenOccurred);
+/// e.broadcast();  // (#2)
+///
+/// // prints the date/time the Event e is broadcast.
+/// // (#1) equivalent to Event<EventArgs>()
+/// // (#2) same as e.broadcast(EventArgs());
+/// ```
+/// As a shortcut to creating your own custom EventArgs derived class, you can
+/// use one of the two provided derived classes:- [Value]
+/// and [Values]. These classes let you provide one or two typed values
+/// to your subscribers. See the descriptions of these two
+/// classes.
+
 class EventArgs {
   /// The name of associated [Event]. Typically set by external code.
-  String _eventName = '';
-  final DateTime _whenOccurred;
+  String eventName = '';
+
+  /// The date/time when the event is [broadcast].
+  final DateTime whenOccurred;
 
   /// Constructor creates a new [EventArgs].
-  EventArgs() : _whenOccurred = DateTime.now();
-
-  // getters
-  /// Gets the [DateTime] the [Event] was broadcast.
-  DateTime get whenOccurred {
-    return _whenOccurred;
-  }
-
-  /// The name of associated [Event].
-  String get eventName => _eventName;
-
-  /// The name of associated [Event]. Typically set by external code.
-  set eventName(String value) {
-    _eventName = value;
-  }
+  EventArgs() : whenOccurred = DateTime.now();
 }
 
 // ------------------------------------------------------------------------------------------------

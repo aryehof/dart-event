@@ -1,13 +1,60 @@
 # Changelog - Event
 
-## Version 3.0.0  (2024-05-18)
+## Version 3.0.0  (2024-08-05)
+
+This version has BREAKING CHANGES
  
-- Minimum Dart sdk dependency is now 3.4.0
-- An EventArgs is created automatically if none provided.
-- An EventArgs can have a name
-- WhenWhy EventArg is deprecated
-
-
+1. Minimum Dart sdk dependency is now 3.4.0
+2. An EventArgs instance is created and broadcast automatically if none provided, i.e.
+``` dart
+  var e = Event();
+    // is equivalent to...
+  var e = Event<EventArgs>(); 
+```
+3. An EventArgs can have a name specified. Some code might be subscribed to more than one Event, so this lets one know which Event caused the code to run.
+``` dart
+  var e = Event("CountUpdatedEvent");
+  e.subscribe((args) => print(args.eventName));
+```
+4. EventArgs includes two accessible values:- eventName and whenOccurred. Note: eventName will be an empty string ("") if not specified.
+``` dart
+  var e = Event();
+  e.subscribe((args) {
+    print(args.eventName); // outputs ""
+    print(args.whenOccurred);
+  };
+  
+  // specifying an event name
+  var e = Event("myEvent");
+  e.subscribe((args) => print(args.eventName));
+  // above outputs "myEvent"
+```
+5. The WhenWhy EventArg derived class is DEPRECATED and removed. Use the EventArgs whenOccurred property instead.
+6. The + and - equivalents to subscribe() and unsubscribe() have been DEPRECATED and removed for simplicity.
+7. A custom ArgsError is thrown if an Event is broadcast() without an appropriate argument
+``` dart
+  var e = Event<CustomEventArgs>();
+  // following throws an ArgsError because broadcast()
+  // specifies no CustomEventArgs
+  e.broadcast();
+  // In this case, the ArgsError message shown would be...
+  // "Incorrect args being broadcast - args should be a CustomEventArgs"
+  
+  // instead, following is correct
+  e.broadcast(CustomEventArgs("hello"));
+```
+8. A new property genericType has been added to the Event class. Gets the generic type of the Event, e.g.
+``` dart
+  var e = Event<Value<int>>();
+  assert(e.genericType == Value<int>); 
+```
+9. The broadcast() method now returns a bool, indicating if the broadcast had subscribers or not. No subscribers means the broadcast() method is effectively ignored.
+``` dart
+  var e = Event();
+  // no subscribers
+  var hadEffect = e.broadcast();
+  assert(hadEffect == false);
+```
 ## Version 2.1.2  (2022-01-11)
 
 - Small README changes
