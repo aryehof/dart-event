@@ -10,7 +10,7 @@ import 'eventargs.dart';
 /// or one derived from it.
 ///
 /// See also [EventArgs].
-typedef EventHandler<T extends EventArgs> = void Function(T? args);
+typedef EventHandler<T extends EventArgs> = void Function(T args);
 
 /// Represents an Event as some number of handlers (subscribers) that can be
 /// notified when a condition occurs, by using the [broadcast] method.
@@ -31,10 +31,38 @@ typedef EventHandler<T extends EventArgs> = void Function(T? args);
 /// onValueChanged.broadcast(ChangedValue(37)); // broadcast the [Event] to subscribers
 /// ```
 class Event<T extends EventArgs> {
+  /// An optional name for the [Event]
+  final String eventName;
+
   /// The handlers (subscribers) associated with this [Event]. Instantiated
   /// lazily (on demand) to reflect that an [Event] may have no subscribers,
   /// and if so, should not incur the overhead of instantiating an empty [List].
   late final List<EventHandler<T>> _handlers = [];
+
+  /// Gets this Events generic type. If not explicitly set, will be [EventArgs], e.g.
+  /// ``` dart
+  /// var e = Event();
+  ///  // is equivalent to
+  /// var e = Event<EventArgs>();
+  /// ```
+  Type get genericType => T;
+
+  /// Creates a new Event with an optional [eventName] to identify the [Event].
+  ///
+  /// To specify that the Event broadcasts values via an EventArgs derived class,
+  /// set the generic type, e.g.
+  /// ``` dart
+  /// var e = Event<Value<int>>();
+  /// ```
+  ///
+  /// Not specifying a generic type means that an EventArgs object will be
+  /// broadcast, e.g. the following are equivalent...
+  /// ``` dart
+  /// var e = Event();
+  /// // equivalent to
+  /// var e = Event<EventArgs>();
+  /// ```
+  Event([this.eventName = ""]);
 
   /// Adds a handler (callback) that will be executed when this
   /// [Event] is raised using the [broadcast] method.
@@ -86,7 +114,7 @@ class Event<T extends EventArgs> {
   ///  sc.close();
   /// ```
   void subscribeStream(StreamSink sink) {
-    _handlers.add((args) => {sink.add(args)});
+    _handlers.add((args) => sink.add(args));
   }
 
   /// Removes a handler previously added to this [Event].
@@ -132,28 +160,51 @@ class Event<T extends EventArgs> {
     return _handlers.length;
   }
 
-  /// Broadcast this [Event] to subscribers, with an optional [EventArgs] derived argument.
+  /// Broadcast this [Event] to subscribers, with an optional [EventArgs] derived
+  /// argument.
   ///
   /// Ignored if no handlers (subscribers).
   /// Calls each handler (callback) that was previously added to this [Event].
   ///
   /// ```dart
   /// // Example
-  /// // Without an [EventArg]
+  /// // Without an <EventArgs> argument
   /// onValueChanged.broadcast();
   ///
-  /// // With an argument [EventArg]
+  /// // With an <EventArgs> argument
   /// onValueChanged2.broadcast(ChangedValue(3.14159));
   /// ```
-  void broadcast([T? args]) {
+  void broadcast([args]) {
+    // if no EventArgs or derived specified, then create one
+    args ??= EventArgs();
+    args.eventName = this.eventName;
+
     for (var i = 0; i < _handlers.length; i++) {
-      _handlers[i].call(args);
+      try {
+        _handlers[i].call(args);
+      } on TypeError catch (e) {
+        throw ArgsError("Incorrect args being broadcast() - args should be a $genericType");
+      }
     }
   }
 
-  /// Represent this [Event] as its Type name
+  /// Represent this [Event] as its (optional) name + Type
   @override
   String toString() {
-    return runtimeType.toString();
+    if (eventName.isEmpty) {
+      return "UnNamed:${runtimeType.toString()}";
+    } else {
+      return "$eventName:${runtimeType.toString()}";
+    }
+  }
+}
+
+class ArgsError extends TypeError {
+  ArgsError(this.message);
+  final String message;
+
+  @override
+  String toString() {
+    return message;
   }
 }

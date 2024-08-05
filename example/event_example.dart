@@ -1,70 +1,64 @@
 import 'package:event/event.dart';
 
 /*
-Summary
+Let's define a domain model independent of any user interface.
+There is only a single dependency - the Event package - which
+lets one...
 
-1. An Event 'valueChangedEvent' is declared in the Counter class
-2. It provides a custom argument to subscribers of the event
-      as specified in the ValueEventArgs class at the
-       bottom of this page.
-   Note that providing an argument to an Event is optional.
-3. A subscriber to the Event is added in the main() method.
-4. The Event (with custom argument) is broadcast (notified) to
-      subscribers in the Counter's increment and reset methods.
-*/
+(#1) declare an Event (something happened),
+(#2) subscribe some code to the Event,
+(#3) and broadcast to subscribers that the event occurred,
+    and the subscribed code should run.
 
-void main() {
-  var c = Counter();
+One could have multiple clients use the domain model, be
+notified when things change, and then query the domain model
+for what has changed.
 
-  // Subscribe to the custom Event.
-  c.valueChangedEvent.subscribe((args) => print('value changed to ${args?.changedValue}'));
+Note: not shown here is that Events can pass data to
+clients, although the more typical architectural model is that
+the client will query the model to determine the model state.
 
-  // The '+' operator is a shortcut for the subscribe method.
-  // It is directly equivalent to ...
-  // c.onValueChanged + (args) => print('value changed to ${args.changedValue}');
-
-  // Increment the Counter. Subscribers are notified.
-  c.increment();
-
-  // Reset the Counter to 0. Subscribers are notified.
-  c.reset();
-}
-
-//-----------------
+ */
 
 /// Represents an example number counter that can be incremented.
-///
-/// Notifies [Event] handlers (subscribers) when incremented.
-/// The notification includes some custom arguments - in this case
-/// the changed [count] (see [ValueEventArgs] below).
 class Counter {
   /// The current [Counter] value.
   int count = 0;
-
-  /// A custom [Event] of type [ValueEventArgs]
-  final valueChangedEvent = Event<ValueEventArgs>();
+  final countChangedEvent = Event(); // (#1)
 
   /// Increment the [Counter] [count] by 1.
   void increment() {
     count++;
-    // notify subscribers of the change in value
-    valueChangedEvent.broadcast(ValueEventArgs(count));
+    countChangedEvent.broadcast(); // (#3)
   }
 
   /// Reset the [Counter] [count] to 0.
   void reset() {
     count = 0;
-    // notify subscribers of the change in value
-    valueChangedEvent.broadcast(ValueEventArgs(count));
+    countChangedEvent.broadcast(); // (#3)
   }
 }
 
 //-----------------
 
-/// Represents some custom arguments provided to subscribers
-/// when an [Event] occurs.
-class ValueEventArgs extends EventArgs {
-  int changedValue;
+/*
+Use the Counter class and be notified when it changes.
+ */
 
-  ValueEventArgs(this.changedValue);
+void main() {
+  var c = Counter();
+
+  // Subscribe code to run when the Event occurs. (#2)
+  c.countChangedEvent.subscribe((args) {
+    print('count changed to ${c.count} at ${args.whenOccurred}');
+  });
+
+  // Increment the Counter. Subscribers are notified,
+  // resulting in the print statement above being executed.
+  c.increment();
+  c.increment();
+
+  // Reset the Counter to 0. Subscribers are notified,
+  // resulting in the print statement above being executed.
+  c.reset();
 }

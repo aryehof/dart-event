@@ -4,66 +4,89 @@
 
 import 'event.dart';
 
-/// An abstract representation of the (optional) arguments provided
-/// to handlers when an [Event] occurs.
+/// Represents data (arguments) that is provided to subscribers when
+/// an [Event] occurs. It includes two values:- [whenOccurred] - the
+/// date/time the [Event] is broadcast, and [eventName] - an optional
+/// name that can be used to identify the associated event.
 ///
-/// This is intended to be extended with your own custom
-/// class, if you want to provide subscribers with some
-/// data relating to the [Event].  Alternatively, use one
-/// of the three supplied [EventArgs] derived classes:
-/// [WhenWhy], [Value] or [Values].
+/// Extend this class with your own custom
+/// derived class, to provide subscribers with
+/// some specific data relating to an [Event].
+///
+/// Note: An [EventArgs] instance is created even when not explicitly
+/// specified as an argument to the [broadcast] method.
 ///
 /// ```dart
-/// // example
-/// class MyChangedValue extends EventArgs {
-///   int changedValue;
-///   MyChangedValue(this.changedValue);
+/// // example ...
+/// var e = Event();   // (#1)
+/// e.subscribe((args) => print(args.whenOccurred);
+/// e.broadcast();  // (#2)
+///
+/// // prints the date/time the Event e is broadcast.
+/// // (#1) equivalent to Event<EventArgs>()
+/// // (#2) same as e.broadcast(EventArgs());
+/// ```
+/// As a shortcut to creating your own custom derived class, you can
+/// use one of the two provided derived classes:- [Value]
+/// and [Values]. These classes let you provide one or two typed values
+/// to your subscribers. See the descriptions of these two
+/// classes below.
+///
+/// ```dart
+/// // example custom arguments
+/// class MyValue extends EventArgs {
+///   int myValue;
+///   MyValue(this.myValue);
+/// }
+/// ...
+/// var e = Event<MyValue>();
+/// e.subscribe((args) => print(args.myValue);
+/// e.broadcast(MyValue(99));
+/// // prints 99
 /// }
 /// ```
-abstract class EventArgs {}
+class EventArgs {
+  /// The name of associated [Event]. Typically set by external code.
+  String _eventName = '';
+  final DateTime _whenOccurred;
 
-/// An [EventArgs] derived class that includes the date/time
-/// the [Event] was broadcast, and an optional description.
-///
-/// Provides a [whenOccurred] and [description] fields.
-///
-/// ```dart
-/// // example declaration ...
-/// var myEvent = Event<WhenWhy>();
-/// // broadcast with an optional description ...
-/// myEvent.broadcast(WhenWhy(description: 'something'))
-/// // in subscriber handler ...
-/// print(args.whenOccurred);
-/// print(args.description);
-/// ```
-class WhenWhy extends EventArgs {
-  /// The date and time the [Event] was broadcast.
-  DateTime whenOccurred;
+  /// Constructor creates a new [EventArgs].
+  EventArgs() : _whenOccurred = DateTime.now();
 
-  /// An optional description or other information.
-  String description;
+  // getters
+  /// Gets the [DateTime] the [Event] was broadcast.
+  DateTime get whenOccurred {
+    return _whenOccurred;
+  }
 
-  /// Creates a new [WhenWhy], with an optional description.
-  WhenWhy({this.description = ''}) : whenOccurred = DateTime.now();
+  /// The name of associated [Event].
+  String get eventName => _eventName;
+
+  /// The name of associated [Event]. Typically set by external code.
+  set eventName(String value) {
+    _eventName = value;
+  }
 }
 
-/// Represents an [EventArgs] derived class with one (generic) value.
+// ------------------------------------------------------------------------------------------------
+
+/// An [EventArgs] derived class with one (generic) value.
 ///
 /// For use as a quick alternative to defining your own custom EventArgs
-/// class. Provides a [value] field that contains the value supplied on
-/// creation.
+/// derived class. Provides a [value] field that contains the value
+/// supplied on creation.
 ///
 /// See also [Values] which supports 2 (generic) values.
 ///
 ///
 /// ```dart
-/// // example declaration with an inferred type
-/// var e = Event<Value>();
-/// // equivalent example declaration with an declared type
-/// var e = Event<Value<String>>();
+/// // example
+/// var e = Event<Value>(); // (#1)
 /// e.subscribe((args) => print(args.value));
 /// e.broadcast(Value('hello'));
+///
 /// // outputs: hello
+/// (#1) equivalent to var e = Event<Value<String>>();
 ///```
 class Value<T> extends EventArgs {
   /// A generic value.
@@ -73,7 +96,7 @@ class Value<T> extends EventArgs {
   Value(this.value);
 }
 
-/// Represents an [EventArgs] derived class with two (generic) values.
+/// An [EventArgs] derived class with two (generic) values.
 ///
 /// For use as a quick alternative to defining your own custom EventArgs
 /// class. Provides [value1] and [value2] fields containing the values
@@ -83,10 +106,12 @@ class Value<T> extends EventArgs {
 ///
 /// ```dart
 /// // example
-/// var e = Event<Values<String, int>>();
-/// e.subscribe((args) => print('${args.value1} : ${args.value2}'));
+/// var e = Event<Values>();  // (#1)
+/// e.subscribe((args) => print('${args.value1} - ${args.value2}'));
 /// e.broadcast(Values('boom', 37));
-/// // outputs: boom : 37
+///
+/// // outputs: boom - 37
+/// (#1) equivalent to var e = Event<Values<String, int>>();
 ///```
 class Values<T1, T2> extends EventArgs {
   /// A generic value.

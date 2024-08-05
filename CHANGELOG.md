@@ -1,5 +1,13 @@
 # Changelog - Event
 
+## Version 3.0.0  (2024-05-18)
+ 
+- Minimum Dart sdk dependency is now 3.4.0
+- An EventArgs is created automatically if none provided.
+- An EventArgs can have a name
+- WhenWhy EventArg is deprecated
+
+
 ## Version 2.1.2  (2022-01-11)
 
 - Small README changes
