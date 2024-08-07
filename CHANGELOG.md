@@ -11,7 +11,7 @@ This version has BREAKING CHANGES
     // is equivalent to...
   var e = Event<EventArgs>(); 
 ```
-3. An EventArgs can have a name specified. Some code might be subscribed to more than one Event, so this lets one know which Event caused the code to run.
+3. An Event can have a name specified. Some code might be subscribed to more than one Event, so this lets one know which Event caused the code to run.
 ``` dart
   var e = Event("CountUpdatedEvent");
   e.subscribe((args) => print(args.eventName));

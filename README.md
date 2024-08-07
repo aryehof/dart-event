@@ -2,6 +2,8 @@
 
 [![Pub Package](https://img.shields.io/pub/v/event.svg?style=flat-square)](https://pub.dev/packages/event)
 
+> IMPORTANT: This version includes breaking changes. See CHANGELOG.md for details
+
 This package supports the creation of lightweight custom Dart Events, that allow interested subscribers to be notified that something has happened. It provides a notification mechanism across independent packages/layers/modules.
 
 It is inspired by the `C#` language's implementation of `Events` and `Delegates`.
@@ -104,7 +106,7 @@ By default, the `eventName` is a blank string. To specify it, provide the name w
   // outputs "MyEvent" to the console
 ```
 
-An eventName might be useful if a client supported the
+An eventName might be useful if a client subscribes to multiple Events. One could query the eventName to determine what occurred from within client code.
 
 #### Simplified Custom EventArgs Example
 
@@ -123,18 +125,17 @@ windChanged.broadcast(Wind('ENE', 27));
 // Wind's direction and strength, is passed to all subscribers
 
 windChanged.subscribe((args) => print('${args.direction}:${args.strength}'));
-// uses + operator alternative notation to '.subscribe'
 // prints ENE:27
 ```
 
 ### Helper Argument Classes
 
-Two prebuilt helper `EventArgs` derived classes are included to cover the common cases of wanting to provide subscribers with:-
+Two prebuilt helper `EventArgs` derived classes (`Value` and `Values`) are included to cover the common cases of wanting to provide subscribers with:-
 
   1. A single value
   2. Any two values
 
-Providing these, means that for these common cases you do not need to create your own custom EventArgs derived argument classes. These three  classes are respectively:-
+Providing these, means that for these common cases you do not need to create your own custom EventArgs derived argument classes. These two classes are respectively:-
 
   1. `Value<T>`, providing a `value` property
   2. `Values<T1, T2>`, providing `value1` and `value2` properties
@@ -261,7 +262,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.counterIncremented.subscribe((args) => print(c.value));
+  c.valueChangedEvent.subscribe((args) => print(c.count));
 
   c.increment();
   c.increment();
@@ -279,21 +280,21 @@ void main() {
 /// Notifies [Event] handlers (subscribers) when incremented.
 class Counter {
   /// The current [Counter] value.
-  int value = 0;
+  int count = 0;
 
   /// A custom [Event]
-  final counterIncremented = Event();
+  final valueChangedEvent = Event();
 
   /// Increment the [Counter] [value] by 1.
   void increment() {
-    value++;
-    counterIncremented.broadcast(); // Broadcast the change
+    count++;
+    valueChangedEvent.broadcast(); // Broadcast the change
   }
 
   /// Reset the [Counter] value to 0.
   void reset() {
-    value = 0;
-    counterIncremented.broadcast(); // Broadcast the change
+    count = 0;
+    valueChangedEvent.broadcast(); // Broadcast the change
   }
 }
 ```
@@ -308,7 +309,7 @@ void main() {
   var c = Counter();
 
   // Subscribe to the custom event
-  c.counterIncremented.subscribe((args) => print('now ${args?.latestValue}'));
+  c.countChangedEvent.subscribe((args) => print('now ${args.value}'));
 
   c.increment();
   c.increment();
@@ -324,27 +325,27 @@ void main() {
 
 /// Represents a number counter that can be incremented.
 /// Notifies [Event] handlers (subscribers) when incremented.
-/// The broadcast notification includes the changed [lastValue] as an argument
+/// The broadcast notification includes the changed [value] as an argument
 /// See the [Incremented] class that follows.
 class Counter {
   /// The current [Counter] count.
   int count = 0;
 
-  /// A custom [Event] with argument [Incremented]
-  /// See [Incremented] class below.
-  final counterIncremented = Event<Incremented>();
+  /// A custom [Event] with custom argument [MyArgs]
+  /// See [MyArgs] class below.
+  final countChangedEvent = Event<MyArgs>();
 
   /// Increment the [Counter] [count] by 1.
   void increment() {
     count++;
-    counterIncremented.broadcast(Incremented(count)); // Broadcast including the incremented value
+    countChangedEvent.broadcast(MyArgs(count)); // Broadcast including the incremented value
 
   }
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
     value = 0;
-    counterIncremented.broadcast(Incremented(count)); // Broadcast the reset value
+    countChangedEvent.broadcast(MyArgs(count)); // Broadcast the reset value
   }
 }
 
@@ -352,13 +353,13 @@ class Counter {
 
 /// Represents the arguments provided to handlers
 /// when an [Event] occurs.
-class Incremented extends EventArgs {
-  int latestValue;
-  Incremented(this.latestValue);
+class MyArgs extends EventArgs {
+  int value;
+  MyArgs(this.value);
 }
 ```
 
-Note: the example above uses a custom `EventArgs` class `Incremented` representing an `int` counter value. One could have instead used the provided `Value<T>` argument helper instead.
+Note: the example above uses a custom `EventArgs` class `MyArgs` representing an `int` value. One could have instead used the provided `Value<T>` argument helper instead.
 
 .END.
 

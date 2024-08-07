@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:developer';
 import 'package:event/src/errors.dart';
 
 import 'eventargs.dart';
