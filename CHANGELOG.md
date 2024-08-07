@@ -15,19 +15,27 @@ This version has BREAKING CHANGES
 ``` dart
   var e = Event("CountUpdatedEvent");
   e.subscribe((args) => print(args.eventName));
+  // outputs "null" until the event is broadcast.
+  e.broadcast();
+  // outputs "CountUpdatedEvent"
 ```
-4. EventArgs includes two accessible values:- eventName and whenOccurred. Note: eventName will be an empty string ("") if not specified.
+4. EventArgs includes two accessible values:- eventName and whenOccurred. Both have a default value of `null`, and are only populated when the Event is broadcast.
 ``` dart
+  // Example without Event name
   var e = Event();
   e.subscribe((args) {
-    print(args.eventName); // outputs ""
-    print(args.whenOccurred);
+    print(args.eventName); // outputs null
+    print(args.whenOccurred); // outputs time of broadcast
   };
+  e.broadcast();
   
-  // specifying an event name
+  // Example specifying an Event name
   var e = Event("myEvent");
-  e.subscribe((args) => print(args.eventName));
-  // above outputs "myEvent"
+  e.subscribe((args) {
+    print(args.eventName); // outputs "myEvent"
+    print(args.whenOccurred); // outputs time of broadcast
+  };
+  e.broadcast();
 ```
 5. The WhenWhy EventArg derived class is DEPRECATED and removed. Use the EventArgs whenOccurred property instead.
 6. The + and - equivalents to subscribe() and unsubscribe() have been DEPRECATED and removed for simplicity.
@@ -55,6 +63,8 @@ This version has BREAKING CHANGES
   var hadEffect = e.broadcast();
   assert(hadEffect == false);
 ```
+10. A syntactical alternative to the `broadcast` method - `notifySubscribers` - has been added.
+
 ## Version 2.1.2  (2022-01-11)
 
 - Small README changes

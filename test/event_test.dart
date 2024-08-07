@@ -265,7 +265,7 @@ void main() {
 
     test('Method toString() returns UnNamed and the Type when the Event is not named', () {
       var e = Event();
-      expect(e.toString(), equals("UnNamed:Event<EventArgs>"));
+      expect(e.toString(), equals("Unnamed:Event<EventArgs>"));
     });
 
     // see Issue #5 - Subscribe once and exception
@@ -281,7 +281,7 @@ void main() {
       String receivedName = '';
 
       var e = Event(expectedName);
-      e.subscribe((args) => receivedName = args.eventName);
+      e.subscribe((args) => receivedName = args.eventName!);
       e.broadcast();
 
       expect(receivedName, equals(expectedName));

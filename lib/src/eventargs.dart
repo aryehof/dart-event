@@ -48,14 +48,11 @@ import 'event.dart';
 /// classes.
 
 class EventArgs {
-  /// The name of associated [Event]. Typically set by external code.
-  String eventName = '';
+  /// The name of associated [Event]. Default value is null. Typically set by external code.
+  String? eventName;
 
-  /// The date/time when the event is [broadcast].
-  final DateTime whenOccurred;
-
-  /// Constructor creates a new [EventArgs].
-  EventArgs() : whenOccurred = DateTime.now();
+  /// The date/time when the event is [broadcast]. Until broadcast, the value is null.
+  DateTime? whenOccurred;
 }
 
 // ------------------------------------------------------------------------------------------------

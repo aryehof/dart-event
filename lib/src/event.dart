@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:developer';
 import 'package:event/src/errors.dart';
 
 import 'eventargs.dart';
@@ -164,9 +165,15 @@ class Event<T extends EventArgs> {
     // if no EventArgs or derived specified, then create one
     args ??= EventArgs();
     args.eventName = this.eventName;
+    args.whenOccurred = DateTime.now().toUtc();
 
     try {
       for (var i = 0; i < _handlers.length; i++) {
+        // log(
+        //   'Broadcast Event "$this"',
+        //   name: "Event",
+        //   time: DateTime.timestamp(),
+        // );
         _handlers[i].call(args);
       }
     } on TypeError {
@@ -176,11 +183,40 @@ class Event<T extends EventArgs> {
     return true;
   }
 
+  /// Notify subscribers that this [Event] occurred, with an optional [EventArgs] derived
+  /// argument. A direct equivalent of the `broadcast` method.
+  ///
+  /// Ignored if no handlers (subscribers).
+  /// Calls each handler (callback) that was previously added to this [Event].
+  ///
+  /// Returns true if there are associated subscribers, or else false if there
+  /// are no subscribers and the broadcast has no effect.
+  ///
+  /// ```dart
+  /// // Example
+  /// // Without an <EventArgs> argument
+  /// var e = Event();
+  /// e.notifySubscribers();
+  ///
+  /// // Note: above is equivalent to...
+  /// var e = Event<EventArgs>();
+  /// e.notifySubscribers(EventArgs());
+  ///
+  /// // With an <EventArgs> argument
+  /// var e = Event<ChangedValue>();
+  /// e.notifySubscribers(ChangedValue(3.14159));
+  /// ```
+  /// If the notifySubscribers argument does not match the
+  /// Event generic type, then an [ArgsError] will be thrown.
+  bool notifySubscribers([args]) {
+    return broadcast(args);
+  }
+
   /// Represent this [Event] as its (optional) name + Type
   @override
   String toString() {
     if (eventName.isEmpty) {
-      return "UnNamed:${runtimeType.toString()}";
+      return "Unnamed:${runtimeType.toString()}";
     } else {
       return "$eventName:${runtimeType.toString()}";
     }

@@ -40,10 +40,7 @@ class Counter {
 }
 
 //-----------------
-
-/*
-Use the Counter class and be notified when it changes.
- */
+// Use the Counter class and be notified when it changes.
 
 void main() {
   var c = Counter();
@@ -53,8 +50,9 @@ void main() {
     print('count changed to ${c.count} at ${args.whenOccurred}');
   });
 
-  // Increment the Counter. Subscribers are notified,
-  // resulting in the print statement above being executed.
+  // Increment the Counter twice. Subscribers are notified,
+  // resulting in the print statement above being executed
+  // twice.
   c.increment();
   c.increment();
 
