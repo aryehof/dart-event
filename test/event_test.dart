@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:event/event.dart';
 import 'package:event/src/errors.dart';
 import 'package:test/test.dart';
@@ -8,19 +9,20 @@ class MyCustomEventArgs extends EventArgs {}
 
 void main() {
   group('Event Tests', () {
-    // setUp(() {});
+    setUp(() {
+      // enable log output
+      showLog(stdout, Severity.allExceptDebug);
+    });
 
     test('Subscriber count is 0 for an Event with no subscribers', () {
       var e = Event();
       // no subscriber
-
       expect(e.subscriberCount, isZero);
     });
 
     test('Subscriber count is 1 on adding a single subscriber', () {
       var e = Event();
       e.subscribe((args) => {});
-
       expect(e.subscriberCount, equals(1));
     });
 
@@ -35,7 +37,6 @@ void main() {
     test('Calling unsubscribe removes a handler', () {
       var e = Event();
       myHandler(args) {} // local function declaration
-
       e.subscribe(myHandler);
       expect(e.subscriberCount, equals(1));
 
@@ -112,7 +113,7 @@ void main() {
       expect(DateTime.now().difference(eventOccurred!), lessThan(Duration(milliseconds: 250)));
     });
 
-    test('Can set an event name which is then available in args', () {
+    test('Can set an Event name which is then available in args', () {
       String? eventName;
 
       var e = Event('myTestEvent');
@@ -124,7 +125,7 @@ void main() {
       expect(eventName, "myTestEvent");
     });
 
-    test('Setting no event name results in the arg name value of ""', () {
+    test('Setting no Event name results in the arg name value of ""', () {
       String? eventName;
 
       var e = Event();
