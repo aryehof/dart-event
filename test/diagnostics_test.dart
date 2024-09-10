@@ -25,6 +25,16 @@ void main() {
       // equivalent to 0xE, i.e. 0000_1110
     });
 
+    test('all is every levels', () {
+      expect(
+          Severity.all,
+          equals(Severity.debug.value |
+              Severity.info.value |
+              Severity.warning.value |
+              Severity.error.value));
+      // equivalent to 0xF, i.e. 0000_1111
+    });
+
     test('hasLevel allows inclusion of the bitmask to be tested', () {
       int mask = Severity.warning.value | Severity.error.value;
 

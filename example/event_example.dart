@@ -51,6 +51,8 @@ void main() {
   // Note: a debug level log message occurs when an event is broadcast
   // Try changing showLog to ...
   // showLog(stdout, Severity.info.value | Severity.debug.value);
+  // or
+  // showLog(stdout, Severity.all);
 
   var c = Counter();
 

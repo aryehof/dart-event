@@ -43,6 +43,13 @@ enum Severity {
     return 0xE;
   }
 
+  /// Returns the value of all levels, i.e.
+  /// Severity.debug.value | Severity.info.value |
+  /// Severity.warning.value | Severity.error.value
+  static int get all {
+    return 0xF;
+  }
+
   /// Tests if the bitmask includes the specified Severity level.
   /// ```dart
   /// // example
