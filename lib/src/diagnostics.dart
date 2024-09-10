@@ -82,7 +82,6 @@ int _severity = 0;
 /// showLog(stdout, Severity.debug.value | Severity.warning.value);
 /// ```
 void showLog(IOSink outputTo, int level) {
-  assert(outputTo != null);
   _sink = outputTo;
   _severity = level;
 }
