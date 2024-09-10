@@ -8,5 +8,6 @@
 /// See also [EventArgs].
 library event;
 
-export 'src/event.dart';
-export 'src/eventargs.dart';
+export 'src/event.dart' show Event;
+export 'src/eventargs.dart' show EventArgs, Value, Values;
+export 'src/diagnostics.dart' show showLog, log, Severity;
