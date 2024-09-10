@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:event/event.dart';
 import 'package:event/src/errors.dart';
-
-import 'eventargs.dart';
 
 /// Defines the function (callback) signature of an Event handler.
 /// It is a function that takes an argument of type [EventArgs],
@@ -80,6 +79,7 @@ class Event<T extends EventArgs> {
   /// ```
   void subscribe(EventHandler<T> handler) {
     _handlers.add(handler);
+    log('Subscribed to Event "$this"', source: "Event", level: Severity.debug);
   }
 
   /// Subscribes a Stream [StreamSink] to an Event.
@@ -168,11 +168,8 @@ class Event<T extends EventArgs> {
 
     try {
       for (var i = 0; i < _handlers.length; i++) {
-        // log(
-        //   'Broadcast Event "$this"',
-        //   name: "Event",
-        //   time: DateTime.timestamp(),
-        // );
+        log('Broadcast Event "$this"', source: "Event", level: Severity.debug);
+
         _handlers[i].call(args);
       }
     } on TypeError {
