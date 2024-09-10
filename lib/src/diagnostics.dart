@@ -8,7 +8,7 @@
 /// showLog(stdout, Severity.info.value); // could be a file or stdout, any IOSink
 ///
 /// // Somewhere later...
-/// log("Some log message", source: "mypackage"); // can set Severity level but debug is default
+/// log("Some log message", source: "mypackage"); // can set Severity level but `info` is default
 ///
 /// // The log statement is ignored (returns false) if showLog wasn't called
 /// // beforehand.
