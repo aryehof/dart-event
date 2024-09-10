@@ -1,5 +1,17 @@
 # Changelog - Event
 
+## Version 3.1.0  (2024-09-10)
+
+1. Minor internal changes
+2. Diagnostic logging is available. See the new `Diagnostics` section in `README.md` and the example application for further information.
+3. Both the `subscribe()` and `broadcast()` Event methods produce diagnostic messages at Severity `debug`. To output these messages use the showLog() method with Severity `debug`. See the example application.
+
+```
+// Example diagnostics logging output
+Event (debug): 2024-09-10 11:37:49.665124Z Subscribed to Event "countChanged:Event<EventArgs>"
+Event (debug): 2024-09-10 11:37:49.675925Z Broadcast Event "countChanged:Event<EventArgs>"
+```
+
 ## Version 3.0.0  (2024-08-05)
 
 This version has BREAKING CHANGES
@@ -12,7 +24,7 @@ This version has BREAKING CHANGES
   var e = Event<EventArgs>(); 
 ```
 3. An Event can have a name specified. Some code might be subscribed to more than one Event, so this lets one know which Event caused the code to run.
-``` dart
+```dart
   var e = Event("CountUpdatedEvent");
   e.subscribe((args) => print(args.eventName));
   // outputs "null" until the event is broadcast.

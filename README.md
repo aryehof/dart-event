@@ -8,14 +8,12 @@ This package supports the creation of lightweight custom Dart Events, that allow
 
 It is inspired by the `C#` language's implementation of `Events` and `Delegates`.
 
-> For `Flutter`, see also [EventSubscriber][eventsubscriber] - a Flutter Widget that can subscribe to an `Event`, and which selectively _rebuilds_ when an `Event` occurs.
-
----
 
 Contents
 * Usage
   * Arguments
   * Broadcast to a Stream
+  * Diagnostics
 * What's New
 * Features and bugs
 * Dependencies
@@ -106,7 +104,7 @@ By default, the `eventName` is a blank string. To specify it, provide the name w
   // outputs "MyEvent" to the console
 ```
 
-An eventName might be useful if a client subscribes to multiple Events. One could query the eventName to determine what occurred from within client code.
+An eventName might be useful if a client subscribes to multiple Events. One could query the eventName to determine what occurred from within client code. It is also useful when using the built in diagnostics library for identifying the Event in a log statement.
 
 #### Simplified Custom EventArgs Example
 
@@ -176,8 +174,6 @@ As with `Value`, one could omit the Values types and have them be of type dynami
 var weatherEvent = Event<Values>(); // no <String, int>
 ```
 
-
-
 ### Broadcast to a Stream
 
 Dart streams enable a sequence of events to be filtered and transformed. One can subscribe an `Event` to a stream using the `subscribeStream` method.
@@ -195,6 +191,44 @@ e.broadcast();
 
 sc.stream.listen((e) => print('boom'));
 sc.close();   // remember to close
+```
+
+### Diagnostics
+
+> New in 3.1.0
+
+Diagnostics logging is available via the built-in diagnostics library. Output a message via the `Log` method, that will be displayed in the IO destination set in the `showLog` method.
+
+If no `showLog` method is included, then `log` statements are ignored.
+
+```dart
+// start of application
+showLog(stdout, Severity.info.value);
+
+// sometime later...
+log("my diagnostic message", source: "mypackage", level: Severity.info);
+```
+
+Both `source` and `level` log arguments have default values and can be omitted. The defaults are "Log" and "Severity.info" respectively.
+
+Severity levels include `debug`, `info`, `warning` and `error`. `Severity.all` includes all of these, while `Severity.allExceptDebug` is as named.
+
+#### Broadcast and Subscribe Logging
+
+The Event `broadcast` and `subscribe` methods both include a diagnostic `log` method. Example output is shown below:-
+
+```
+// Example diagnostics logging output
+Event (debug): 2024-09-10 11:37:49.665124Z Subscribed to Event "countChanged:Event<EventArgs>"
+Event (debug): 2024-09-10 11:37:49.675925Z Broadcast Event "countChanged:Event<EventArgs>"
+```
+
+Note that the Severity level in the ShowLog method must include Severity.debug to see these messages, i.e.
+
+```dart
+showLog(stdout, Severity.debug.value);
+// or
+showLog(stdout, Severity.all);
 ```
 
 ## What's New
