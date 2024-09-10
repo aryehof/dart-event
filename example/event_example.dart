@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:event/event.dart';
 
 /*
@@ -24,7 +26,7 @@ the client will query the model to determine the model state.
 class Counter {
   /// The current [Counter] value.
   int count = 0;
-  final countChangedEvent = Event(); // (#1)
+  final countChangedEvent = Event("countChanged"); // (#1)
 
   /// Increment the [Counter] [count] by 1.
   void increment() {
@@ -43,11 +45,19 @@ class Counter {
 // Use the Counter class and be notified when it changes.
 
 void main() {
+  // enable log output
+  showLog(stdout, Severity.info.value);
+
+  // Note: a debug level log message occurs when an event is broadcast
+  // Try changing showLog to ...
+  // showLog(stdout, Severity.info.value | Severity.debug.value);
+
   var c = Counter();
 
   // Subscribe code to run when the Event occurs. (#2)
   c.countChangedEvent.subscribe((args) {
-    print('count changed to ${c.count} at ${args.whenOccurred}');
+    log('count changed to ${c.count} at ${args.whenOccurred}',
+        source: "counter", level: Severity.info);
   });
 
   // Increment the Counter twice. Subscribers are notified,
