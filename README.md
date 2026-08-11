@@ -1,3 +1,5 @@
+
+
 # Event
 
 [![Pub Package](https://img.shields.io/pub/v/event.svg?style=flat-square)](https://pub.dev/packages/event)
@@ -378,7 +380,7 @@ class Counter {
 
   /// Reset the [Counter] [value] to 0.
   void reset() {
-    value = 0;
+    count = 0;
     countChangedEvent.broadcast(MyArgs(count)); // Broadcast the reset value
   }
 }
